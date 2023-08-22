@@ -25,7 +25,7 @@ public class ExamPlatform {
             String username = doc.getElementsByTagName("entry").item(2).getTextContent();
             String password = doc.getElementsByTagName("entry").item(3).getTextContent();
 
-
+            //forName() method of Class class is used to register the driver class
             Class.forName(driver);
 
 
@@ -61,8 +61,7 @@ public class ExamPlatform {
 
 
             }
-
-
+            
             resultSet.close();
             statement.close();
 
