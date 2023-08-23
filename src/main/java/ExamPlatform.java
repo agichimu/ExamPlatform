@@ -12,30 +12,33 @@ import javax.xml.parsers.DocumentBuilderFactory;
 public class ExamPlatform {
     public static void main(String[] args) {
         try {
-
             File xmlFile = new File("/home/agichimu/IdeaProjects/ExamPlatform/connections/connections.xml");
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
             Document doc = dBuilder.parse(xmlFile);
             doc.getDocumentElement().normalize();
 
-
             String driver = doc.getElementsByTagName("entry").item(0).getTextContent();
             String url = doc.getElementsByTagName("entry").item(1).getTextContent();
             String username = doc.getElementsByTagName("entry").item(2).getTextContent();
             String password = doc.getElementsByTagName("entry").item(3).getTextContent();
 
-            //forName() method of Class class is used to register the driver class
             Class.forName(driver);
-
-
             Connection connection = DriverManager.getConnection(url, username, password);
 
+            displayExamsSetByATeacher(connection);
 
+            connection.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void displayExamsSetByATeacher(Connection connection) {
+        try {
             Statement statement = connection.createStatement();
             String query = "SELECT * FROM examination_details";
             ResultSet resultSet = statement.executeQuery(query);
-
 
             while (resultSet.next()) {
                 long examinationId = resultSet.getLong("examination_id");
@@ -48,7 +51,6 @@ public class ExamPlatform {
                 Timestamp dateCreated = resultSet.getTimestamp("date_created");
                 Timestamp dateModified = resultSet.getTimestamp("date_modified");
 
-
                 System.out.println("Examination ID: " + examinationId);
                 System.out.println("Instructions: " + instructions);
                 System.out.println("Teacher ID: " + teacherId);
@@ -58,15 +60,10 @@ public class ExamPlatform {
                 System.out.println("Question ID: " + questionId);
                 System.out.println("Date Created: " + dateCreated);
                 System.out.println("Date Modified: " + dateModified);
-
-
             }
-            
+
             resultSet.close();
             statement.close();
-
-
-            connection.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
