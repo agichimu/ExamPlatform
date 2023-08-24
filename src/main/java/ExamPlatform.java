@@ -27,6 +27,7 @@ public class ExamPlatform {
             Connection connection = DriverManager.getConnection(url, username, password);
 
             displayExamsSetByATeacher(connection);
+            reportOnPupilAnswers(connection);
 
             connection.close();
         } catch (Exception e) {
@@ -37,27 +38,19 @@ public class ExamPlatform {
     public static void displayExamsSetByATeacher(Connection connection) {
         try {
             Statement statement = connection.createStatement();
-            String query = "SELECT * FROM examination_details";
+            String query = "SELECT examination_id , examination_name , examination_time , date_created , date_modified FROM examination_details  WHERE teacher_id = 1";
             ResultSet resultSet = statement.executeQuery(query);
 
             while (resultSet.next()) {
                 long examinationId = resultSet.getLong("examination_id");
-                String instructions = resultSet.getString("instructions");
-                int teacherId = resultSet.getInt("teacher_id");
                 String examinationName = resultSet.getString("examination_name");
-                int subjectId = resultSet.getInt("subject_id");
                 Timestamp examinationTime = resultSet.getTimestamp("examination_time");
-                long questionId = resultSet.getLong("question_id");
                 Timestamp dateCreated = resultSet.getTimestamp("date_created");
                 Timestamp dateModified = resultSet.getTimestamp("date_modified");
 
                 System.out.println("Examination ID: " + examinationId);
-                System.out.println("Instructions: " + instructions);
-                System.out.println("Teacher ID: " + teacherId);
                 System.out.println("Examination Name: " + examinationName);
-                System.out.println("Subject ID: " + subjectId);
                 System.out.println("Examination Time: " + examinationTime);
-                System.out.println("Question ID: " + questionId);
                 System.out.println("Date Created: " + dateCreated);
                 System.out.println("Date Modified: " + dateModified);
             }
@@ -68,4 +61,25 @@ public class ExamPlatform {
             e.printStackTrace();
         }
     }
+    public static void reportOnPupilAnswers(Connection connection) {
+        try {
+            Statement statement = connection.createStatement();
+            String query = "SELECT answer_id  , choice_id  FROM answer_detail WHERE pupil_id = 1";
+            ResultSet resultSet = statement.executeQuery(query);
+
+            while (resultSet.next()) {
+                long answer_id = resultSet.getLong("answer_id");
+                long choice_id = resultSet.getLong("choice_id");
+
+                System.out.println("Answer ID: " + answer_id);
+                System.out.println("Choice Id: " + choice_id);
+            }
+
+            resultSet.close();
+            statement.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 }
