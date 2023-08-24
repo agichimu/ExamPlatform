@@ -12,7 +12,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 public class ExamPlatform {
     public static void main(String[] args) {
         try {
-            File xmlFile = new File("/home/agichimu/IdeaProjects/ExamPlatform/connections/connections.xml");
+            File xmlFile = new File("/home/alexander/IdeaProjects/ExamPlatform/connections/connections.xml");
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
             Document doc = dBuilder.parse(xmlFile);
