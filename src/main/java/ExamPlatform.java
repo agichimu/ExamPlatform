@@ -28,6 +28,7 @@ public class ExamPlatform {
 
             displayExamsSetByATeacher(connection);
             reportOnPupilAnswers(connection);
+            reportOnTop5pupils(connection);
 
             connection.close();
         } catch (Exception e) {
@@ -78,6 +79,27 @@ public class ExamPlatform {
             resultSet.close();
             statement.close();
         } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void reportOnTop5pupils(Connection connection){
+        try{
+            Statement statement = connection.createStatement();
+            String query = "SELECT p.first_name , p.second_name , SUM(ad.scores) AS total_scores, (SUM(ad.scores) / (COUNT(*) * 2)) * 100 AS percentage FROM answer_detail ad JOIN pupils_details p ON ad.pupil_id = p.pupil_id  GROUP BY p.pupil_id, p.first_name, p.second_name ORDER BY total_scores DESC LIMIT 5";
+            ResultSet resultSet = statement.executeQuery(query);
+
+            while (resultSet.next()){
+                String first_name = resultSet.getString("p.first_name");
+                String second_name = resultSet.getString("p.second_name");
+                Long percentage = resultSet.getLong("percentage");
+
+                System.out.println("P.First_Name" + first_name);
+                System.out.println("P.Second_Name" + second_name);
+                System.out.println("Percentage" + percentage);
+
+            }
+        }catch (Exception e){
             e.printStackTrace();
         }
     }
