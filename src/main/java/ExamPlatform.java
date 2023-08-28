@@ -33,6 +33,7 @@ public class ExamPlatform {
         }
     }
 
+   //Display all the exams set by a teacher.
     public static void displayExamsSetByATeacher(Connection connection) {
         try {
             Statement statement = connection.createStatement();
@@ -60,6 +61,7 @@ public class ExamPlatform {
             e.printStackTrace();
         }
     }
+    //Generate a report on the answers provided by a pupil for an exam and their percentage score in that exam.
     public static void reportOnPupilAnswers(Connection connection) {
         try {
             Statement statement = connection.createStatement();
@@ -82,6 +84,7 @@ public class ExamPlatform {
         }
     }
 
+    //Generate a report on the top 5 pupils with the highest scores in a certain exam.
     public static void reportOnTop5pupils(Connection connection){
         try{
             Statement statement = connection.createStatement();
@@ -104,6 +107,7 @@ public class ExamPlatform {
         }
     }
 
+    //Generate a report sheet of the scores for all pupils in each of the exams done and rank them from the highest average score to lowest.
     public static void reportSheetForAllPupils(Connection connection) {
         try {
             Statement statement = connection.createStatement();
