@@ -1,13 +1,9 @@
-import java.io.File;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.Statement;
-import java.sql.Timestamp;
-
 import org.w3c.dom.Document;
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+import java.io.File;
+import java.sql.*;
 
 public class ExamPlatform {
     public static void main(String[] args) {
@@ -29,6 +25,7 @@ public class ExamPlatform {
             displayExamsSetByATeacher(connection);
             reportOnPupilAnswers(connection);
             reportOnTop5pupils(connection);
+            reportSheetForAllPupils(connection);
 
             connection.close();
         } catch (Exception e) {
@@ -49,6 +46,7 @@ public class ExamPlatform {
                 Timestamp dateCreated = resultSet.getTimestamp("date_created");
                 Timestamp dateModified = resultSet.getTimestamp("date_modified");
 
+                System.out.println("Display all the exams set by a teacher.");
                 System.out.println("Examination ID: " + examinationId);
                 System.out.println("Examination Name: " + examinationName);
                 System.out.println("Examination Time: " + examinationTime);
@@ -72,6 +70,7 @@ public class ExamPlatform {
                 long answer_id = resultSet.getLong("answer_id");
                 long choice_id = resultSet.getLong("choice_id");
 
+                System.out.println("Generate a report on the answers provided by a pupil for an exam and their percentage score in that exam.");
                 System.out.println("Answer ID: " + answer_id);
                 System.out.println("Choice Id: " + choice_id);
             }
@@ -94,6 +93,7 @@ public class ExamPlatform {
                 String second_name = resultSet.getString("p.second_name");
                 Long percentage = resultSet.getLong("percentage");
 
+                System.out.println("Generate a report on the top 5 pupils with the highest scores in a certain exam.");
                 System.out.println("P.First_Name" + first_name);
                 System.out.println("P.Second_Name" + second_name);
                 System.out.println("Percentage" + percentage);
@@ -103,5 +103,37 @@ public class ExamPlatform {
             e.printStackTrace();
         }
     }
+
+    public static void reportSheetForAllPupils(Connection connection) {
+        try {
+            Statement statement = connection.createStatement();
+            String query = "SELECT p.first_name, p.second_name, SUM(ad.scores) AS total_scores, (SUM(ad.scores) / (COUNT(*) * 2)) * 100 AS percentage FROM answer_detail ad JOIN pupils_details p ON ad.pupil_id = p.pupil_id GROUP BY p.pupil_id, p.first_name, p.second_name ORDER BY total_scores DESC ";
+            ResultSet resultSet = statement.executeQuery(query);
+
+
+
+            while (resultSet.next()) {
+                String first_name = resultSet.getString("first_name");
+                String second_name = resultSet.getString("second_name");
+                Long total_scores = resultSet.getLong("total_scores");
+                Long percentage = resultSet.getLong("percentage");
+
+                System.out.println("Generate a report sheet of the scores for all pupils in each of the exams done and rank them from the highest average score to lowest.");
+                System.out.println("P.First_Name: " + first_name);
+                System.out.println("P.Second_Name: " + second_name);
+                System.out.println("Total Scores: " + total_scores);
+                System.out.println("Percentage: " + percentage + "%");
+
+            }
+
+            resultSet.close();
+            statement.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
+
 
 }
