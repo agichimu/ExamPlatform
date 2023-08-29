@@ -40,6 +40,8 @@ public class ExamPlatform {
             String query = "SELECT examination_id , examination_name , examination_time , date_created , date_modified FROM examination_details  WHERE teacher_id = 1";
             ResultSet resultSet = statement.executeQuery(query);
 
+            System.out.println("Display all the exams set by a teacher.");
+
             while (resultSet.next()) {
                 long examinationId = resultSet.getLong("examination_id");
                 String examinationName = resultSet.getString("examination_name");
@@ -47,7 +49,7 @@ public class ExamPlatform {
                 Timestamp dateCreated = resultSet.getTimestamp("date_created");
                 Timestamp dateModified = resultSet.getTimestamp("date_modified");
 
-                System.out.println("Display all the exams set by a teacher.");
+
                 System.out.println("Examination ID: " + examinationId);
                 System.out.println("Examination Name: " + examinationName);
                 System.out.println("Examination Time: " + examinationTime);
@@ -68,11 +70,13 @@ public class ExamPlatform {
             String query = "SELECT answer_id  , choice_id  FROM answer_detail WHERE pupil_id = 1";
             ResultSet resultSet = statement.executeQuery(query);
 
+            System.out.println("Generate a report on the answers provided by a pupil for an exam and their percentage score in that exam.");
+
             while (resultSet.next()) {
                 long answer_id = resultSet.getLong("answer_id");
                 long choice_id = resultSet.getLong("choice_id");
 
-                System.out.println("Generate a report on the answers provided by a pupil for an exam and their percentage score in that exam.");
+
                 System.out.println("Answer ID: " + answer_id);
                 System.out.println("Choice Id: " + choice_id);
             }
@@ -91,12 +95,14 @@ public class ExamPlatform {
             String query = "SELECT p.first_name , p.second_name , SUM(ad.scores) AS total_scores, (SUM(ad.scores) / (COUNT(*) * 2)) * 100 AS percentage FROM answer_detail ad JOIN pupils_details p ON ad.pupil_id = p.pupil_id  GROUP BY p.pupil_id, p.first_name, p.second_name ORDER BY total_scores DESC LIMIT 5";
             ResultSet resultSet = statement.executeQuery(query);
 
+            System.out.println("Generate a report on the top 5 pupils with the highest scores in a certain exam.");
+
             while (resultSet.next()){
                 String first_name = resultSet.getString("p.first_name");
                 String second_name = resultSet.getString("p.second_name");
                 Long percentage = resultSet.getLong("percentage");
 
-                System.out.println("Generate a report on the top 5 pupils with the highest scores in a certain exam.");
+
                 System.out.println("P.First_Name" + first_name);
                 System.out.println("P.Second_Name" + second_name);
                 System.out.println("Percentage" + percentage);
@@ -115,6 +121,7 @@ public class ExamPlatform {
             ResultSet resultSet = statement.executeQuery(query);
 
 
+            System.out.println("Generate a report sheet of the scores for all pupils in each of the exams done and rank them from the highest average score to lowest.");
 
             while (resultSet.next()) {
                 String first_name = resultSet.getString("first_name");
@@ -122,7 +129,6 @@ public class ExamPlatform {
                 Long total_scores = resultSet.getLong("total_scores");
                 Long percentage = resultSet.getLong("percentage");
 
-                System.out.println("Generate a report sheet of the scores for all pupils in each of the exams done and rank them from the highest average score to lowest.");
                 System.out.println("P.First_Name: " + first_name);
                 System.out.println("P.Second_Name: " + second_name);
                 System.out.println("Total Scores: " + total_scores);
