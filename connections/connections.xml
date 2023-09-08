@@ -1,8 +1,11 @@
-<?xml version="1.0" encoding="UTF-8" ?>
-<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
-<properties>
-    <entry key="driver">com.mysql.cj.jdbc.Driver</entry>
-    <entry key="url">jdbc:mysql://localhost:3306/exams_platform </entry>
-    <entry key="username">root</entry>
-    <entry key="password">@Alexander!123</entry>
-</properties>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<CONFIG>
+    <DATABASE>
+        <DATABASE_TYPE>MYSQL</DATABASE_TYPE>
+        <DATABASE_DRIVER>com.mysql.cj.jdbc.Driver</DATABASE_DRIVER>
+        <DATABASE_URL/>
+        <DATABASE_NAME TYPE="CLEARTEXT">exams_db</DATABASE_NAME>
+        <USERNAME TYPE="ENCRYPTED"/>
+        <PASSWORD TYPE="ENCRYPTED"/>
+    </DATABASE>
+</CONFIG>

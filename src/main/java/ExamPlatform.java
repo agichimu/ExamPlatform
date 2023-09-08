@@ -1,28 +1,36 @@
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.io.File;
 import java.sql.*;
 
+
+
 public class ExamPlatform {
     public static void main(String[] args) {
         try {
-            File xmlFile = new File("/home/alexander/IdeaProjects/ExamPlatform/connections/connections.xml");
+
+            File xmlFile = new File("connections/connections.xml");
             DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
             Document doc = dBuilder.parse(xmlFile);
             doc.getDocumentElement().normalize();
 
-            String driver = doc.getElementsByTagName("entry").item(0).getTextContent();
-            String url = doc.getElementsByTagName("entry").item(1).getTextContent();
-            String username = doc.getElementsByTagName("entry").item(2).getTextContent();
-            String password = doc.getElementsByTagName("entry").item(3).getTextContent();
+            Element databaseElement = (Element) doc.getElementsByTagName("DATABASE").item(0);
+
+            String driver = databaseElement.getElementsByTagName("DATABASE_DRIVER").item(0).getTextContent();
+            String url = databaseElement.getElementsByTagName("DATABASE_URL").item(0).getTextContent();
+            String username = databaseElement.getElementsByTagName("CLEARTEXT USERNAME").item(0).getTextContent();
+            String password = databaseElement.getElementsByTagName("CLEARTEXT PASSWORD").item(0).getTextContent();
 
             Class.forName(driver);
             Connection connection = DriverManager.getConnection(url, username, password);
 
-            displayExamsSetByATeacher(connection);
+            String teacherIdToSearch = String.valueOf(1);
+            Object teacher_id = null;
+            displayExamsSetByATeacher(connection, null);
             reportOnPupilAnswers(connection);
             reportOnTop5pupils(connection);
             reportSheetForAllPupils(connection);
@@ -31,14 +39,22 @@ public class ExamPlatform {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
     }
 
    //Display all the exams set by a teacher.
-    public static void displayExamsSetByATeacher(Connection connection) {
+    public static void displayExamsSetByATeacher(Connection connection, Object teacher_id) throws Exception{
         try {
-            Statement statement = connection.createStatement();
-            String query = "SELECT examination_id , examination_name , examination_time , date_created , date_modified FROM examination_details  WHERE teacher_id = 1";
-            ResultSet resultSet = statement.executeQuery(query);
+            // add code to check connection
+            PreparedStatement preparedStatementStatement= connection.prepareStatement("SELECT examination_id , " +
+                    "examination_name , " +
+                    "examination_time , " +
+                    "date_created , " +
+                    "date_modified " +
+                    "FROM examination_details  " +
+                    "WHERE teacher_id = ?");
+            preparedStatementStatement.setString(1 ,"teacher_id");
+            ResultSet resultSet = ((PreparedStatement) preparedStatementStatement).executeQuery();
 
             System.out.println("Display all the exams set by a teacher.");
 
@@ -58,7 +74,7 @@ public class ExamPlatform {
             }
 
             resultSet.close();
-            statement.close();
+            preparedStatementStatement.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -67,10 +83,10 @@ public class ExamPlatform {
     public static void reportOnPupilAnswers(Connection connection) {
         try {
             Statement statement = connection.createStatement();
-            String query = "SELECT answer_id  , choice_id  FROM answer_detail WHERE pupil_id = 1";
+            String query = "SELECT answer_id  , choice_id  FROM answer_detail WHERE pupil_id = ?";
             ResultSet resultSet = statement.executeQuery(query);
 
-            System.out.println("Generate a report on the answers provided by a pupil for an exam and their percentage score in that exam.");
+            System.out.println("Task 2: Generate a report on the answers provided by a pupil for an exam and their percentage score in that exam.");
 
             while (resultSet.next()) {
                 long answer_id = resultSet.getLong("answer_id");
@@ -100,7 +116,7 @@ public class ExamPlatform {
             while (resultSet.next()){
                 String first_name = resultSet.getString("p.first_name");
                 String second_name = resultSet.getString("p.second_name");
-                Long percentage = resultSet.getLong("percentage");
+                long percentage = resultSet.getLong("percentage");
 
 
                 System.out.println("P.First_Name" + first_name);
@@ -126,8 +142,8 @@ public class ExamPlatform {
             while (resultSet.next()) {
                 String first_name = resultSet.getString("first_name");
                 String second_name = resultSet.getString("second_name");
-                Long total_scores = resultSet.getLong("total_scores");
-                Long percentage = resultSet.getLong("percentage");
+                long total_scores = resultSet.getLong("total_scores");
+                long percentage = resultSet.getLong("percentage");
 
                 System.out.println("P.First_Name: " + first_name);
                 System.out.println("P.Second_Name: " + second_name);
