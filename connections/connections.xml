@@ -1,11 +1,11 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<CONFIG>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><CONFIG>
     <DATABASE>
         <DATABASE_TYPE>MYSQL</DATABASE_TYPE>
+        <HOST>Localhost</HOST>
         <DATABASE_DRIVER>com.mysql.cj.jdbc.Driver</DATABASE_DRIVER>
-        <DATABASE_URL/>
-        <DATABASE_NAME TYPE="CLEARTEXT">exams_db</DATABASE_NAME>
-        <USERNAME TYPE="ENCRYPTED"/>
-        <PASSWORD TYPE="ENCRYPTED"/>
+        <DATABASE_URL>com.mysql.cj.jdbc.Driver</DATABASE_URL>
+        <DATABASE_NAME TYPE="CLEARTEXT">exams_platform</DATABASE_NAME>
+        <USERNAME TYPE="CLEARTEXT">root</USERNAME>
+        <PASSWORD TYPE="CLEARTEXT">@Alexander!123</PASSWORD>
     </DATABASE>
 </CONFIG>

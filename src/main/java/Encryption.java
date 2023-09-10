@@ -9,7 +9,6 @@ import java.security.spec.KeySpec;
 import java.util.Arrays;
 import java.util.Base64;
 
-/*@SuppressWarnings("ALL")*/
 public class Encryption {
 
     private static final String ENCRYPTION_ALGORITHM = "AES";
@@ -20,13 +19,16 @@ public class Encryption {
 
     private static final char[] charKey = {'b','r','u','t','a','l'};
 
-    private SecretKey secretKey;
+    private static SecretKey secretKey;
 
-    public Encryption() throws Exception {
-        generateSecretKey( Arrays.toString ( charKey ) );
+    private static byte[] generateSalt() {
+        byte[] salt = new byte[16];
+        SecureRandom random = new SecureRandom();
+        random.nextBytes(salt);
+        return salt;
     }
 
-    private void generateSecretKey(String password) throws Exception {
+    private static void generateSecretKey(String password) throws Exception {
         byte[] salt = generateSalt();
         KeySpec spec = new PBEKeySpec(password.toCharArray(), salt, ITERATION_COUNT, KEY_LENGTH);
         SecretKeyFactory factory = SecretKeyFactory.getInstance(SECRET_KEY_ALGORITHM);
@@ -34,21 +36,14 @@ public class Encryption {
         secretKey = new SecretKeySpec(raw, ENCRYPTION_ALGORITHM);
     }
 
-    private byte[] generateSalt() {
-        byte[] salt = new byte[16];
-        SecureRandom random = new SecureRandom();
-        random.nextBytes(salt);
-        return salt;
-    }
-
-    public String encrypt(String clearText) throws Exception {
+    public static String encrypt(String clearText) throws Exception {
         Cipher cipher = Cipher.getInstance(ENCRYPTION_MODE);
         cipher.init(Cipher.ENCRYPT_MODE, secretKey);
         byte[] encryptedBytes = cipher.doFinal(clearText.getBytes(StandardCharsets.UTF_8));
         return Base64.getEncoder().encodeToString(encryptedBytes);
     }
 
-    public String decrypt(String encryptedText) throws Exception {
+    public static String decrypt(String encryptedText) throws Exception {
         Cipher cipher = Cipher.getInstance(ENCRYPTION_MODE);
         cipher.init(Cipher.DECRYPT_MODE, secretKey);
         byte[] decryptedBytes = cipher.doFinal(Base64.getDecoder().decode(encryptedText));
@@ -56,30 +51,28 @@ public class Encryption {
     }
 
     public static void main(String[] args) throws Exception {
-
-
-        Encryption encryptor = new Encryption();
+        String password = Arrays.toString(charKey);
+        generateSecretKey(password);
 
         String plaintextDatabaseName = "exams_platform";
         String plaintextUsername = "root";
         String plaintextPassword = "@Alexander!123";
 
-        String encryptedDatabaseName = encryptor.encrypt(plaintextDatabaseName);
-        String encryptedUsername = encryptor.encrypt(plaintextUsername);
-        String encryptedPassword = encryptor.encrypt(plaintextPassword);
+        String encryptedDatabaseName = encrypt(plaintextDatabaseName);
+        String encryptedUsername = encrypt(plaintextUsername);
+        String encryptedPassword = encrypt(plaintextPassword);
 
         System.out.println("Encrypted Database Name: " + encryptedDatabaseName);
         System.out.println("Encrypted Username: " + encryptedUsername);
         System.out.println("Encrypted Password: " + encryptedPassword);
 
-       String decryptedDatabaseName = encryptor.decrypt(encryptedDatabaseName);
-        String decryptedUsername = encryptor.decrypt(encryptedUsername);
-        String decryptedPassword = encryptor.decrypt(encryptedPassword);
+        String decryptedDatabaseName = decrypt(encryptedDatabaseName);
+        String decryptedUsername = decrypt(encryptedUsername);
+        String decryptedPassword = decrypt(encryptedPassword);
 
         System.out.println("Decrypted Database Name: " + decryptedDatabaseName);
         System.out.println("Decrypted Username: " + decryptedUsername);
         System.out.println("Decrypted Password: " + decryptedPassword);
     }
 
-    }
-
+}
