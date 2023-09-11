@@ -10,14 +10,14 @@
 
 ## A pupil can answer the questions and the system records their score.
 
-#Tasks
+# Tasks
 
-##Design and implement a database that meets the requirements above.
+## Design and implement a database that meets the requirements above.
 
-##Display all the exams set by a teacher.
+## Display all the exams set by a teacher.
 
-##Generate a report on the answers provided by a pupil for an exam and their percentage score in that exam.
+## Generate a report on the answers provided by a pupil for an exam and their percentage score in that exam.
 
-##Generate a report on the top 5 pupils with the highest scores in a certain exam.
+## Generate a report on the top 5 pupils with the highest scores in a certain exam.
 
-##Generate a report sheet of the scores for all pupils in each of the exams done and rank them from the highest average score to lowest.
+## Generate a report sheet of the scores for all pupils in each of the exams done and rank them from the highest average score to lowest.
