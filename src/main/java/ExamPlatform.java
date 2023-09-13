@@ -18,12 +18,15 @@ public class ExamPlatform {
             Document doc = dBuilder.parse(xmlFile);
             doc.getDocumentElement().normalize();
 
+
+
+
             Element databaseElement = (Element) doc.getElementsByTagName("DATABASE").item(0);
 
             String driver = databaseElement.getElementsByTagName("DATABASE_DRIVER").item(0).getTextContent();
             String url = databaseElement.getElementsByTagName("DATABASE_URL").item(0).getTextContent();
             String username = databaseElement.getElementsByTagName("CLEARTEXT USERNAME").item(0).getTextContent();
-            String password = databaseElement.getElementsByTagName("CLEARTEXT PASSWORD").item(0).getTextContent();
+            String password = databaseElement.getElementsByTagName("CLEARTEXT").item(0).getTextContent();
 
             Class.forName(driver);
             Connection connection = DriverManager.getConnection(url, username, password);
@@ -54,7 +57,7 @@ public class ExamPlatform {
                     "FROM examination_details  " +
                     "WHERE teacher_id = ?");
             preparedStatementStatement.setString(1 ,"teacher_id");
-            ResultSet resultSet = ((PreparedStatement) preparedStatementStatement).executeQuery();
+            ResultSet resultSet = preparedStatementStatement.executeQuery();
 
             System.out.println("Display all the exams set by a teacher.");
 

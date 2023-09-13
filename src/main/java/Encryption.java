@@ -17,7 +17,7 @@ public class Encryption {
     private static final int KEY_LENGTH = 256;
     private static final int ITERATION_COUNT = 65536;
 
-    private static final char[] charKey = {'b','r','u','t','a','l'};
+    public static final char[] charKey = {'b','r','u','t','a','l'};
 
     private static SecretKey secretKey;
 
@@ -28,7 +28,7 @@ public class Encryption {
         return salt;
     }
 
-    private static void generateSecretKey(String password) throws Exception {
+    public static void generateSecretKey(String password) throws Exception {
         byte[] salt = generateSalt();
         KeySpec spec = new PBEKeySpec(password.toCharArray(), salt, ITERATION_COUNT, KEY_LENGTH);
         SecretKeyFactory factory = SecretKeyFactory.getInstance(SECRET_KEY_ALGORITHM);
@@ -38,7 +38,7 @@ public class Encryption {
 
     public static String encrypt(String clearText) throws Exception {
         Cipher cipher = Cipher.getInstance(ENCRYPTION_MODE);
-        cipher.init(Cipher.ENCRYPT_MODE, secretKey);
+        cipher.init (Cipher.ENCRYPT_MODE, secretKey);
         byte[] encryptedBytes = cipher.doFinal(clearText.getBytes(StandardCharsets.UTF_8));
         return Base64.getEncoder().encodeToString(encryptedBytes);
     }
