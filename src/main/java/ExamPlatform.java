@@ -8,12 +8,45 @@ import static Utilities.XmlReader.getElementType;
 public class ExamPlatform {
     public static void main(String[] args) throws Exception {
 
+<<<<<<< HEAD
         // XmlReader.xml
         XmlReader.getDatabaseName();
         XmlReader.getUsername();
         XmlReader.getPassword();
         getElementType();
         // closing
+=======
+            File xmlFile = new File("connections/connections.xml");
+            DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+            Document doc = dBuilder.parse(xmlFile);
+            doc.getDocumentElement().normalize();
+
+
+
+
+            Element databaseElement = (Element) doc.getElementsByTagName("DATABASE").item(0);
+
+            String driver = databaseElement.getElementsByTagName("DATABASE_DRIVER").item(0).getTextContent();
+            String url = databaseElement.getElementsByTagName("DATABASE_URL").item(0).getTextContent();
+            String username = databaseElement.getElementsByTagName("CLEARTEXT USERNAME").item(0).getTextContent();
+            String password = databaseElement.getElementsByTagName("CLEARTEXT").item(0).getTextContent();
+
+            Class.forName(driver);
+            Connection connection = DriverManager.getConnection(url, username, password);
+
+            String teacherIdToSearch = String.valueOf(1);
+            Object teacher_id = null;
+            displayExamsSetByATeacher(connection, null);
+            reportOnPupilAnswers(connection);
+            reportOnTop5pupils(connection);
+            reportSheetForAllPupils(connection);
+
+            connection.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+>>>>>>> origin
 
         //connection manager
        // ConnectionsManager.readAndEncryptConnectionXmlFile();
@@ -30,7 +63,12 @@ public class ExamPlatform {
                     "date_modified " +
                     "FROM examination_details  " +
                     "WHERE teacher_id = ?");
+<<<<<<< HEAD
             ResultSet resultSet = preparedStatementStatement.executeQuery ();
+=======
+            preparedStatementStatement.setString(1 ,"teacher_id");
+            ResultSet resultSet = preparedStatementStatement.executeQuery();
+>>>>>>> origin
 
             System.out.println ("Display all the exams set by a teacher.");
 
