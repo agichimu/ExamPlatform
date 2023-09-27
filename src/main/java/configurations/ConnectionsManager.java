@@ -12,87 +12,98 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpression;
-import javax.xml.xpath.XPathFactory;
 import java.io.File;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-
 
 public class ConnectionsManager {
-    private static final String ENCRYPTED_DATABASE_NAME = "encryptedDatabaseName";
-    private static final String ENCRYPTED_USERNAME = "encryptedUsername";
-    private static final String ENCRYPTED_PASSWORD = "encryptedPassword";
-
-
+    public static void main(String[] args) {
+        readAndEncryptConnectionXmlFile ();
+    }
 
     public static void readAndEncryptConnectionXmlFile() {
         try {
-            XmlReader.getElementType();
+            // Load and parsing the XML file
 
-            NodeList clearTextElements = (NodeList) expression.evaluate(document, XPathConstants.NODESET);
+            File     connectionsXmlFile = new File ("connections/connections.xml");
+            Document document           = parseXmlFile (connectionsXmlFile);
 
-            for (int i = 0; i < clearTextElements.getLength(); i++) {
-                Element element = (Element) clearTextElements.item(i);
-                String plainTextValue = element.getTextContent();
+            // Check if the XML is already marked as encrypted
 
-                String encryptedValue = Encryption.encrypt(plainTextValue);
-                element.setTextContent(encryptedValue);
+            if (!isXmlMarkedAsEncrypted (document)) {
+
+                /*db name*/
+
+                String databaseName = XmlReader.getDatabaseName ();
+                String encryptedDatabaseName = Encryption.encrypt (databaseName);
+                String decryptedDatabase = Encryption.decrypt (encryptedDatabaseName);
+                System.out.println (decryptedDatabase);
 
 
-                element.setAttribute("TYPE", "ENCRYPTED");
+                /*user-name*/
 
+                String username     = XmlReader.getUsername ();
+                String encryptedUsername     = Encryption.encrypt (username);
+
+                /*password*/
+
+                String password     = XmlReader.getPassword ();
+                String encryptedPassword     = Encryption.encrypt (password);
+
+                // Update the XML elements with encrypted data
+
+                updateElementValue (document, "DATABASE_NAME", encryptedDatabaseName);
+                updateElementValue (document, "USERNAME", encryptedUsername);
+                updateElementValue (document, "PASSWORD", encryptedPassword);
+
+                /*Saving back the updated Connections.xml file*/
+
+                saveXmlDocument (document, connectionsXmlFile);
+
+                System.out.println ("Encryption complete !! ");
+            } else {
+                System.out.println ("Already encrypted \uD83D\uDE1E");
             }
-
-            TransformerFactory transformerFactory = TransformerFactory.newInstance();
-            Transformer transformer = transformerFactory.newTransformer();
-            DOMSource source = new DOMSource(document);
-            StreamResult result = new StreamResult(connectionsXmlFile);
-            transformer.transform(source, result);
-
-            System.out.println("Encrypted connection information in XML file.");
-
         } catch (Exception e) {
-            e.printStackTrace();
+            e.printStackTrace ();
+
         }
     }
 
-
-    public static void createDatabaseConnection() {
-        try {
-            File connectionsXmlFile = new File("connections/connections.xml");
-            DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
-            Document document = documentBuilder.parse(connectionsXmlFile);
-
-            String databaseName = Encryption.decrypt(getElementValueById(document, ENCRYPTED_DATABASE_NAME));
-            String username = Encryption.decrypt(getElementValueById(document, ENCRYPTED_USERNAME));
-            String password = Encryption.decrypt(getElementValueById(document, ENCRYPTED_PASSWORD));
-
-            String jdbcUrl = "jdbc:mysql://localhost:3306/" + databaseName;
-
-            try (Connection connection = DriverManager.getConnection(jdbcUrl, username, password)) {
-                connection.beginRequest();
-                System.out.println("Connected to the database.");
-            } catch (SQLException e) {
-                e.printStackTrace();
-                throw new RuntimeException(e);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new RuntimeException(e);
-        }
+    private static Document parseXmlFile(File file) throws Exception {
+        DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance ();
+        DocumentBuilder        documentBuilder        = documentBuilderFactory.newDocumentBuilder ();
+        return documentBuilder.parse (file);
     }
 
-    private static String getElementValueById(Document document, String id) {
-        Element element = document.getElementById(id);
-        if (element != null) {
-            return element.getTextContent();
-        } else {
-            throw new RuntimeException("Encrypted database connection information not found.");
+    private static boolean isXmlMarkedAsEncrypted(Document document) {
+        Element databaseNameElement = (Element) document.getElementsByTagName ("DATABASE_NAME").item (0);
+        Element usernameElement     = (Element) document.getElementsByTagName ("USERNAME").item (0);
+        Element passwordElement     = (Element) document.getElementsByTagName ("PASSWORD").item (0);
+
+        return (databaseNameElement != null && "ENCRYPTED".equalsIgnoreCase (databaseNameElement.getAttribute ("TYPE"))) &&
+                (usernameElement != null && "ENCRYPTED".equalsIgnoreCase (usernameElement.getAttribute ("TYPE"))) &&
+                (passwordElement != null && "ENCRYPTED".equalsIgnoreCase (passwordElement.getAttribute ("TYPE")));
+    }
+
+    private static void updateElementValue(Document document, String elementName, String newValue) {
+        NodeList nodeList = document.getElementsByTagName (elementName);
+        for (int i = 0; i < nodeList.getLength (); i++) {
+            nodeList.item (i).setTextContent (newValue);
+            if (true) {
+                // Add the "TYPE" attribute as "ENCRYPTED"
+                Element element = (Element) nodeList.item (i);
+                element.setAttribute ("TYPE", "ENCRYPTED");
+            } else {
+                // Remove the "TYPE" attribute if present
+                Element element = (Element) nodeList.item (i);
+                element.removeAttribute ("TYPE");
+            }
         }
+    }
+    private static void saveXmlDocument(Document document, File file) throws Exception {
+        TransformerFactory transformerFactory = TransformerFactory.newInstance ();
+        Transformer        transformer        = transformerFactory.newTransformer ();
+        DOMSource          source             = new DOMSource (document);
+        StreamResult       result             = new StreamResult (file);
+        transformer.transform (source, result);
     }
 }

@@ -1,25 +1,11 @@
-<<<<<<< HEAD
-<?xml version="1.0" encoding="UTF-8"?>
-<CONFIG>
-<DB>
-    <DATABASE_TYPE>MYSQL</DATABASE_TYPE>
-    <HOST>Localhost</HOST>
-    <DATABASE_DRIVER>com.mysql.cj.jdbc.Driver</DATABASE_DRIVER>
-    <DATABASE_URL>com.mysql.cj.jdbc.Driver</DATABASE_URL>
-    <DATABASE_NAME TYPE = "CLEARTEXT">online_exams_platform</DATABASE_NAME>
-    <USERNAME TYPE = "CLEARTEXT">root</USERNAME>
-    <PASSWORD TYPE = "CLEARTEXT">@Alexander!123</PASSWORD>
-</DB>
-=======
 <?xml version="1.0" encoding="UTF-8" standalone="no"?><CONFIG>
     <DATABASE>
         <DATABASE_TYPE>MYSQL</DATABASE_TYPE>
         <HOST>Localhost</HOST>
         <DATABASE_DRIVER>com.mysql.cj.jdbc.Driver</DATABASE_DRIVER>
         <DATABASE_URL>com.mysql.cj.jdbc.Driver</DATABASE_URL>
-        <DATABASE_NAME TYPE="ENCRYPTED">PSVpjTlwP2ksk2ygtUunHySCrxn52cIqdNa5BJ0aWY4=</DATABASE_NAME>
-        <USERNAME TYPE="ENCRYPTED">hz4QQEgRARqrKEWPWSpSJA==</USERNAME>
-        <PASSWORD TYPE="ENCRYPTED">JUR0Bn4hHBNMA0debQ76oQ==</PASSWORD>
+        <DATABASE_NAME TYPE="ENCRYPTED">P17u+Vtv6GV9EIQWCBmFtRCtBO6XxishyjAPf+4CTvs=</DATABASE_NAME>
+        <USERNAME TYPE="ENCRYPTED">lm40O+qi/8nJiXnlWiO4+Q==</USERNAME>
+        <PASSWORD TYPE="ENCRYPTED">brHSq0a1G3ThigM5BddJNw==</PASSWORD>
     </DATABASE>
->>>>>>> origin
 </CONFIG>

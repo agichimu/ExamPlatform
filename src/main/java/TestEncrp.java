@@ -1,5 +1,3 @@
-package encryption;
-
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
@@ -10,7 +8,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.spec.KeySpec;
 import java.util.Base64;
 
-public class Encryption {
+class TestEncrp {
     // Class private variables
     private static final String SECRET_KEY
             = "my_super_secret_key_ho_ho_ho";
@@ -51,7 +49,7 @@ public class Encryption {
                             StandardCharsets.UTF_8)));
         } catch (Exception e) {
             System.out.println ("Error while encrypting: "
-                    + e);
+                    + e.toString ());
         }
         return null;
     }
@@ -91,23 +89,25 @@ public class Encryption {
                     Base64.getDecoder ().decode (strToDecrypt)));
         } catch (Exception e) {
             System.out.println ("Error while decrypting: "
-                    + e);
+                    + e.toString ());
         }
         return null;
     }
 }
 
 // driver code
-class Main {
+ class Main {
     public static void main(String[] args) {
         // Create String variables
-        String originalString = "Alexander";
+        String originalString = "GeeksforGeeks";
 
         // Call encryption method
-        String encryptedString = Encryption.encrypt (originalString);
+        String encryptedString
+                = TestEncrp.encrypt (originalString);
 
         // Call decryption method
-        String decryptedString = Encryption.decrypt (encryptedString);
+        String decryptedString
+                = TestEncrp.decrypt (encryptedString);
 
         // Print all strings
         System.out.println (originalString);
@@ -115,4 +115,4 @@ class Main {
         System.out.println (decryptedString);
     }
 }
-
+    

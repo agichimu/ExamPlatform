@@ -6,7 +6,6 @@ import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
 import java.security.SecureRandom;
 import java.security.spec.KeySpec;
-import java.util.Arrays;
 import java.util.Base64;
 
 public class Encryption {
@@ -17,7 +16,12 @@ public class Encryption {
     private static final int KEY_LENGTH = 256;
     private static final int ITERATION_COUNT = 65536;
 
-    public static final char[] charKey = {'b','r','u','t','a','l'};
+    public static final char[] charKey;
+
+    static {
+        charKey = new char[]{'b', 'r', 'u', 't', 'a', 'l'};
+    }
+
 
     private static SecretKey secretKey;
 
@@ -49,30 +53,4 @@ public class Encryption {
         byte[] decryptedBytes = cipher.doFinal(Base64.getDecoder().decode(encryptedText));
         return new String(decryptedBytes, StandardCharsets.UTF_8);
     }
-
-    public static void main(String[] args) throws Exception {
-        String password = Arrays.toString(charKey);
-        generateSecretKey(password);
-
-        String plaintextDatabaseName = "exams_platform";
-        String plaintextUsername = "root";
-        String plaintextPassword = "@Alexander!123";
-
-        String encryptedDatabaseName = encrypt(plaintextDatabaseName);
-        String encryptedUsername = encrypt(plaintextUsername);
-        String encryptedPassword = encrypt(plaintextPassword);
-
-        System.out.println("Encrypted Database Name: " + encryptedDatabaseName);
-        System.out.println("Encrypted Username: " + encryptedUsername);
-        System.out.println("Encrypted Password: " + encryptedPassword);
-
-        String decryptedDatabaseName = decrypt(encryptedDatabaseName);
-        String decryptedUsername = decrypt(encryptedUsername);
-        String decryptedPassword = decrypt(encryptedPassword);
-
-        System.out.println("Decrypted Database Name: " + decryptedDatabaseName);
-        System.out.println("Decrypted Username: " + decryptedUsername);
-        System.out.println("Decrypted Password: " + decryptedPassword);
-    }
-
 }
