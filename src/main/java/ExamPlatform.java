@@ -1,11 +1,14 @@
+import configurations.ConnectionsManager;
+import org.w3c.dom.Document;
+
 import java.sql.*;
 
 
 public class ExamPlatform {
-    private static org.w3c.dom.Document Document;
+
 
     public static void main(String[] args) {
-
+        ConnectionsManager.readAndProcessConnectionXmlFile();
     }
 
    /* Object pupil_id          = null;
@@ -151,8 +154,8 @@ public class ExamPlatform {
         }
     }
 
-    public static void setDocument(org.w3c.dom.Document document) {
-        Document = document;
+    public static void setDocument(Document document) {
+        document = document;
     }
 }
 

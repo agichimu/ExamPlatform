@@ -127,7 +127,7 @@ public class XmlReader {
         }
 
     }
-    public static void main(String[] args) throws Exception {
+    public static void main(String[] args) {
         getElementType ();
         getPassword ();
         getDatabaseName ();

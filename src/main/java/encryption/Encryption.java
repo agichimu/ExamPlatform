@@ -98,21 +98,21 @@ public class Encryption {
 }
 
 // driver code
-class Main {
-    public static void main(String[] args) {
-        // Create String variables
-        String originalString = "Alexander";
-
-        // Call encryption method
-        String encryptedString = Encryption.encrypt (originalString);
-
-        // Call decryption method
-        String decryptedString = Encryption.decrypt (encryptedString);
-
-        // Print all strings
-        System.out.println (originalString);
-        System.out.println (encryptedString);
-        System.out.println (decryptedString);
-    }
-}
+//class Main {
+//     public static void main(String[] args) {
+//         // Create String variables
+//         String originalString = "Alexander";
+//
+//         // Call encryption method
+//         String encryptedString = Encryption.encrypt (originalString);
+//
+//         // Call decryption method
+//         String decryptedString = Encryption.decrypt (encryptedString);
+//
+//         // Print all strings
+//         System.out.println (originalString);
+//         System.out.println (encryptedString);
+//         System.out.println (decryptedString);
+//     }
+// }
 
