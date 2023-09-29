@@ -104,7 +104,8 @@ public class ExamPlatform {
 
             resultSet = preparedStatement.executeQuery();
 
-            System.out.println("Generate a report on the answers provided by a pupil for an exam and their percentage score in that exam.");
+            System.out.println("Generate a report on the answers provided by a pupil for an exam and " +
+                    "their percentage score in that exam.");
 
             while (resultSet.next()) {
                 long answer_id = resultSet.getLong("answer_id");
@@ -119,7 +120,6 @@ public class ExamPlatform {
         } catch (Exception e) {
             throw new RuntimeException(e);
         } finally {
-            // Close the resultSet and preparedStatement outside the loop
             if (resultSet != null) {
                 try {
                     resultSet.close();
@@ -137,7 +137,8 @@ public class ExamPlatform {
 
     public static void reportOnTop5pupils(Connection connection) {
         try {
-            String query = "SELECT p.first_name, p.second_name, SUM(ad.scores) AS total_scores, (SUM(ad.scores) / (COUNT(*) * 2)) * 100 AS percentage " +
+            String query = "SELECT p.first_name, p.second_name, SUM(ad.scores) AS total_scores, (SUM(ad.scores)" +
+                    " / (COUNT(*) * 2)) * 100 AS percentage " +
                     "FROM answer_detail ad " +
                     "JOIN pupils_details p ON ad.pupil_id = p.pupil_id " +
                     "GROUP BY p.pupil_id, p.first_name, p.second_name " +
@@ -165,14 +166,16 @@ public class ExamPlatform {
         }
     }
 
-    // Generate a report sheet of the scores for all pupils in each of the exams done and rank them from the highest average score to lowest.
+    // Generate a report sheet of the scores for all pupils in each of the exams done and rank them from the highest
+    // average score to lowest.
 
     public static void reportSheetForAllPupils(Connection connection) throws SQLException {
         PreparedStatement preparedStatement = null;
         ResultSet resultSet = null;
 
         try {
-            String query = "SELECT p.first_name, p.second_name, SUM(ad.scores) AS total_scores, (SUM(ad.scores) / (COUNT(*) * 2)) * 100 AS percentage " +
+            String query = "SELECT p.first_name, p.second_name, SUM(ad.scores) AS total_scores, " +
+                    "(SUM(ad.scores) / (COUNT(*) * 2)) * 100 AS percentage " +
                     "FROM answer_detail ad " +
                     "JOIN pupils_details p ON ad.pupil_id = p.pupil_id " +
                     "GROUP BY p.pupil_id, p.first_name, p.second_name " +
@@ -180,7 +183,8 @@ public class ExamPlatform {
             preparedStatement = connection.prepareStatement(query);
             resultSet = preparedStatement.executeQuery();
 
-            System.out.println("Generate a report sheet of the scores for all pupils in each of the exams done and rank them from the highest average score to lowest.");
+            System.out.println("Generate a report sheet of the scores for all pupils in each of the exams done " +
+                    "and rank them from the highest average score to lowest.");
 
             while (resultSet.next()) {
                 String first_name = resultSet.getString("first_name");
@@ -196,7 +200,6 @@ public class ExamPlatform {
         } catch (SQLException | RuntimeException e) {
             throw new RuntimeException(e);
         } finally {
-            // Close the resultSet and preparedStatement outside the loop
             if (resultSet != null) {
                 resultSet.close();
             }
