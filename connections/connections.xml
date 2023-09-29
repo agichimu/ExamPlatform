@@ -1,11 +1,13 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?><CONFIG>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<CONFIG>
     <DATABASE>
         <DATABASE_TYPE>MYSQL</DATABASE_TYPE>
         <HOST>Localhost</HOST>
+        <PORT>3306</PORT>
         <DATABASE_DRIVER>com.mysql.cj.jdbc.Driver</DATABASE_DRIVER>
-        <DATABASE_URL>com.mysql.cj.jdbc.Driver</DATABASE_URL>
-        <DATABASE_NAME TYPE="ENCRYPTED">P17u+Vtv6GV9EIQWCBmFtRCtBO6XxishyjAPf+4CTvs=</DATABASE_NAME>
-        <USERNAME TYPE="ENCRYPTED">lm40O+qi/8nJiXnlWiO4+Q==</USERNAME>
-        <PASSWORD TYPE="ENCRYPTED">brHSq0a1G3ThigM5BddJNw==</PASSWORD>
+        <DATABASE_URL>jdbc:mysql://localhost:3306/</DATABASE_URL>
+        <DATABASE_NAME TYPE="ENCRYPTED">Cd92NT+mGqbP5jsXs7dJmIVZLquFPc+24P9g70Bsxvg=</DATABASE_NAME>
+        <USERNAME TYPE="ENCRYPTED">XUkRkCMWytiCRkwfonjQSA==</USERNAME>
+        <PASSWORD TYPE="ENCRYPTED">lu/jl4MR9OQ70YNWUbdE0Q==</PASSWORD>
     </DATABASE>
 </CONFIG>

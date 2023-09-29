@@ -12,10 +12,9 @@ import java.util.Base64;
 
 public class Encryption {
     // Class private variables
-    private static final String SECRET_KEY
-            = "my_super_secret_key_ho_ho_ho";
+    private static final String SECRET_KEY = "b_r_u_t_a_l_d_o_c_k";
 
-    private static final String SALT = "ssshhhhhhhhhhh!!!!";
+    private static final String SALT = "xander!!!!";
 
     // This method use to encrypt to string
     public static String encrypt(String strToEncrypt) {
@@ -24,34 +23,23 @@ public class Encryption {
             // Create default byte array
             byte[] iv = {0, 0, 0, 0, 0, 0, 0, 0,
                     0, 0, 0, 0, 0, 0, 0, 0};
-            IvParameterSpec ivspec
-                    = new IvParameterSpec (iv);
+            IvParameterSpec ivspec = new IvParameterSpec (iv);
 
             // Create SecretKeyFactory object
-            SecretKeyFactory factory
-                    = SecretKeyFactory.getInstance (
-                    "PBKDF2WithHmacSHA256");
+            SecretKeyFactory factory = SecretKeyFactory.getInstance ("PBKDF2WithHmacSHA256");
 
             // Create KeySpec object and assign with
             // constructor
-            KeySpec spec = new PBEKeySpec (
-                    SECRET_KEY.toCharArray (), SALT.getBytes (),
-                    65536, 256);
+            KeySpec spec = new PBEKeySpec (SECRET_KEY.toCharArray (), SALT.getBytes (), 65536, 256);
             SecretKey tmp = factory.generateSecret (spec);
-            SecretKeySpec secretKey = new SecretKeySpec (
-                    tmp.getEncoded (), "AES");
+            SecretKeySpec secretKey = new SecretKeySpec (tmp.getEncoded (), "AES");
 
-            Cipher cipher = Cipher.getInstance (
-                    "AES/CBC/PKCS5Padding");
-            cipher.init (Cipher.ENCRYPT_MODE, secretKey,
-                    ivspec);
+            Cipher cipher = Cipher.getInstance ("AES/CBC/PKCS5Padding");
+            cipher.init (Cipher.ENCRYPT_MODE, secretKey, ivspec);
             // Return encrypted string
-            return Base64.getEncoder ().encodeToString (
-                    cipher.doFinal (strToEncrypt.getBytes (
-                            StandardCharsets.UTF_8)));
+            return Base64.getEncoder ().encodeToString (cipher.doFinal (strToEncrypt.getBytes (StandardCharsets.UTF_8)));
         } catch (Exception e) {
-            System.out.println ("Error while encrypting: "
-                    + e);
+            System.out.println ("Error while encrypting: " + e);
         }
         return null;
     }
@@ -65,54 +53,42 @@ public class Encryption {
                     0, 0, 0, 0, 0, 0, 0, 0};
             // Create IvParameterSpec object and assign with
             // constructor
-            IvParameterSpec ivspec
-                    = new IvParameterSpec (iv);
+            IvParameterSpec ivspec = new IvParameterSpec (iv);
 
             // Create SecretKeyFactory Object
-            SecretKeyFactory factory
-                    = SecretKeyFactory.getInstance (
-                    "PBKDF2WithHmacSHA256");
+            SecretKeyFactory factory = SecretKeyFactory.getInstance ("PBKDF2WithHmacSHA256");
 
             // Create KeySpec object and assign with
             // constructor
-            KeySpec spec = new PBEKeySpec (
-                    SECRET_KEY.toCharArray (), SALT.getBytes (),
-                    65536, 256);
+            KeySpec spec = new PBEKeySpec (SECRET_KEY.toCharArray (), SALT.getBytes (), 65536, 256);
             SecretKey tmp = factory.generateSecret (spec);
-            SecretKeySpec secretKey = new SecretKeySpec (
-                    tmp.getEncoded (), "AES");
+            SecretKeySpec secretKey = new SecretKeySpec (tmp.getEncoded (), "AES");
 
-            Cipher cipher = Cipher.getInstance (
-                    "AES/CBC/PKCS5PADDING");
-            cipher.init (Cipher.DECRYPT_MODE, secretKey,
-                    ivspec);
+            Cipher cipher = Cipher.getInstance ("AES/CBC/PKCS5PADDING");
+            cipher.init (Cipher.DECRYPT_MODE, secretKey, ivspec);
             // Return decrypted string
-            return new String (cipher.doFinal (
-                    Base64.getDecoder ().decode (strToDecrypt)));
+            return new String (cipher.doFinal (Base64.getDecoder ().decode (strToDecrypt)));
         } catch (Exception e) {
-            System.out.println ("Error while decrypting: "
-                    + e);
+            System.out.println ("Error while decrypting: " + e);
         }
         return null;
     }
-}
+    // driver code
 
-// driver code
-//class Main {
-//     public static void main(String[] args) {
-//         // Create String variables
-//         String originalString = "Alexander";
-//
-//         // Call encryption method
-//         String encryptedString = Encryption.encrypt (originalString);
-//
-//         // Call decryption method
-//         String decryptedString = Encryption.decrypt (encryptedString);
-//
-//         // Print all strings
-//         System.out.println (originalString);
-//         System.out.println (encryptedString);
-//         System.out.println (decryptedString);
-//     }
-// }
+    // public static void main(String[] args) {
+    //     // Create String variables
+    //     String originalString = "Alexander";
+    //
+    //     // Call encryption method
+    //     String encryptedString = Encryption.encrypt (originalString);
+    //
+    //     // Call decryption method
+    //     String decryptedString = Encryption.decrypt (encryptedString);
+    //
+    //     // Print all strings
+    //     System.out.println (originalString);
+    //     System.out.println (encryptedString);
+    //     System.out.println (decryptedString);
+    // }
+}
 
