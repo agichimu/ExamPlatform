@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<CONFIG>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><CONFIG>
     <DATABASE>
         <DATABASE_TYPE>MYSQL</DATABASE_TYPE>
         <HOST>Localhost</HOST>
