@@ -31,6 +31,28 @@
             <scope>test</scope>
         </dependency>
 
+        <!-- https://mvnrepository.com/artifact/io.undertow/undertow-core -->
+        <dependency>
+            <groupId>io.undertow</groupId>
+            <artifactId>undertow-core</artifactId>
+            <version>2.3.8.Final</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/io.undertow/undertow-servlet -->
+        <dependency>
+            <groupId>io.undertow</groupId>
+            <artifactId>undertow-servlet</artifactId>
+            <version>2.3.8.Final</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/io.undertow/undertow-websockets-jsr -->
+        <dependency>
+            <groupId>io.undertow</groupId>
+            <artifactId>undertow-websockets-jsr</artifactId>
+            <version>2.3.8.Final</version>
+        </dependency>
+
+
 
     </dependencies>
 

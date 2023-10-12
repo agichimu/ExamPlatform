@@ -34,19 +34,20 @@ public class ExamPlatform {
 
             System.out.println("Connected to the database.");
 
+            String pupilIdToSearch = "1";
+            String teacherIdToSearch = "1";
+            displayExamsSetByATeacher(connection, teacherIdToSearch);
+            reportOnPupilAnswers(connection, pupilIdToSearch);
+            reportOnTop5pupils(connection);
+            reportSheetForAllPupils(connection);
+
         } catch (Exception e) {
             e.printStackTrace();
-        }
-
-        String pupilIdToSearch = "1";
-        String teacherIdToSearch = "1";
-        displayExamsSetByATeacher(connection, teacherIdToSearch);
-        reportOnPupilAnswers(connection, pupilIdToSearch);
-        reportOnTop5pupils(connection);
-        try {
-            reportSheetForAllPupils(connection);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
+        }finally {
+            if (connection != null) {
+                connection.close();
+                System.out.println("Database connection closed.");
+            }
         }
     }
 
@@ -59,7 +60,6 @@ public class ExamPlatform {
                     "WHERE teacher_id = ?";
             preparedStatement = connection.prepareStatement(query);
             preparedStatement.setString(1, teacher_id);
-
             resultSet = preparedStatement.executeQuery();
 
             System.out.println("Display all the exams set by a teacher.");
@@ -205,10 +205,6 @@ public class ExamPlatform {
             }
             if (preparedStatement != null) {
                 preparedStatement.close();
-            }
-            if (connection != null) {
-                connection.close();
-                System.out.println("Database connection closed.");
             }
         }
     }

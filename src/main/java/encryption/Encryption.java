@@ -21,8 +21,7 @@ public class Encryption {
         try {
 
             // Create default byte array
-            byte[] iv = {0, 0, 0, 0, 0, 0, 0, 0,
-                    0, 0, 0, 0, 0, 0, 0, 0};
+            byte[] iv = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
             IvParameterSpec ivspec = new IvParameterSpec (iv);
 
             // Create SecretKeyFactory object
@@ -49,8 +48,7 @@ public class Encryption {
         try {
 
             // Default byte array
-            byte[] iv = {0, 0, 0, 0, 0, 0, 0, 0,
-                    0, 0, 0, 0, 0, 0, 0, 0};
+            byte[] iv = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
             // Create IvParameterSpec object and assign with
             // constructor
             IvParameterSpec ivspec = new IvParameterSpec (iv);
