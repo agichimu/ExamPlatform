@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
-    <data-source source="LOCAL" name="exams_platform@localhost" uuid="fe47d56d-0245-4c8e-bc7b-9669854bde46">
+    <data-source source="LOCAL" name="online_exams_platform@localhost" uuid="1019e077-3ba4-4536-a810-e79ecc5136e0">
       <driver-ref>mysql.8</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>
-      <jdbc-url>jdbc:mysql://localhost:3306/exams_platform</jdbc-url>
+      <jdbc-url>jdbc:mysql://localhost:3306/online_exams_platform</jdbc-url>
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
   </component>
