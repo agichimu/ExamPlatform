@@ -5,7 +5,7 @@ import io.undertow.server.HttpHandler;
 
 public class UndertowTest {
     public static void main(String[] args) {
-        /* Define a simple HTTP handler */
+        /* HTTP handler */
         HttpHandler handler = exchange -> exchange.getResponseSender().send("Hello, Undertow!");
 
         /* Create an Undertow server and add the handler */

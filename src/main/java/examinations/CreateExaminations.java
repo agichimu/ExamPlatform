@@ -15,7 +15,7 @@ public class CreateExaminations {
                 .addHttpListener(8080, "localhost")
                 .setHandler(exchange -> {
                     if (exchange.getRequestMethod().equalToString("POST") && exchange.getRequestPath().equals("/exams")) {
-                        handleCreateExam(exchange);
+                        createExam(exchange);
                     } else {
                         exchange.setStatusCode(404);
                         exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "application/json");
@@ -27,9 +27,9 @@ public class CreateExaminations {
         server.start();
     }
 
-    public static void handleCreateExam(HttpServerExchange exchange) {
+    public static void createExam(HttpServerExchange exchange) {
         if (exchange.isInIoThread()) {
-            exchange.dispatch(() -> handleCreateExam(exchange));
+            exchange.dispatch(() -> createExam(exchange));
             return;
         }
 

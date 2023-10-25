@@ -26,7 +26,7 @@ public class RouteHandler {
         // Exam-related routes
         routingHandler.add("POST",
                 "/exams",
-                CreateExaminations::handleCreateExam);
+                CreateExaminations::createExam);
 
         routingHandler.add("GET", "/exams/", ReadExaminations::readExams);
 
