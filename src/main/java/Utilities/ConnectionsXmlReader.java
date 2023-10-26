@@ -19,19 +19,91 @@ import java.io.File;
 
 
 public class ConnectionsXmlReader {
-   /* public static void main(String[] args) {
-        getDatabaseName();
-        getUsername();
-        getPassword();
-        getDatabaseURL();
+    public static void main(String[] args) {
 
-        String databaseURL = getDatabaseURL();
-        if (databaseURL != null) {
-            System.out.println("Database URL: " + databaseURL);
-        } else {
-            System.out.println("Failed to retrieve the database URL.");
+        String portRest = getPortRest();
+        String hostRest = getHostRest();
+        String basePathRest = getBasePathRest();
+
+
+        System.out.println("HOST REST: " + hostRest);
+        System.out.println("PORT REST: " + portRest);
+        System.out.println("BASE_PATH REST: " + basePathRest);
+
+    }
+
+    public static String getPortRest() {
+        try {
+            File connectionsXmlFile = new File("connections/connections.xml");
+            DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
+            Document document = documentBuilder.parse(connectionsXmlFile);
+
+            XPathFactory xPathFactory = XPathFactory.newInstance();
+            XPath xpath = xPathFactory.newXPath();
+
+            String expression = "/CONFIG/API/UNDERTOW/PORT[@REST]";
+            Node portRestNode = (Node) xpath.evaluate(expression, document, XPathConstants.NODE);
+
+            if (portRestNode != null) {
+                return portRestNode.getAttributes().getNamedItem("REST").getNodeValue();
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-    }*/
+
+        return null;
+    }
+    public static String getHostRest() {
+        try {
+            File connectionsXmlFile = new File("connections/connections.xml");
+            DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
+            Document document = documentBuilder.parse(connectionsXmlFile);
+
+            XPathFactory xPathFactory = XPathFactory.newInstance();
+            XPath xpath = xPathFactory.newXPath();
+
+            String expression = "/CONFIG/API/UNDERTOW/HOST[@REST]";
+            Node hostRestNode = (Node) xpath.evaluate(expression, document, XPathConstants.NODE);
+
+            if (hostRestNode != null) {
+                return hostRestNode.getAttributes().getNamedItem("REST").getNodeValue();
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+    public static String getBasePathRest() {
+        try {
+            File connectionsXmlFile = new File("connections/connections.xml");
+            DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
+            Document document = documentBuilder.parse(connectionsXmlFile);
+
+            XPathFactory xPathFactory = XPathFactory.newInstance();
+            XPath xpath = xPathFactory.newXPath();
+
+            String expression = "/CONFIG/API/UNDERTOW/BASE_PATH[@REST]";
+            Node basePathRestNode = (Node) xpath.evaluate(expression, document, XPathConstants.NODE);
+
+            if (basePathRestNode != null) {
+                return basePathRestNode.getAttributes().getNamedItem("REST").getNodeValue();
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
+
 
     public static String getDatabaseName() {
         try {
@@ -67,11 +139,10 @@ public class ConnectionsXmlReader {
                     StreamResult result = new StreamResult(connectionsXmlFile);
                     transformer.transform(source, result);
 
-                   // System.out.println("Database Name: " + encryptedDatabaseName);
                     return encryptedDatabaseName;
                 } else if ("ENCRYPTED".equalsIgnoreCase(typeAttribute)) {
                     String decryptedDatabaseName = Encryption.decrypt(databaseName);
-                    //System.out.println("Database Name Is Already Encrypted: " + decryptedDatabaseName);
+
                     return decryptedDatabaseName;
                 } else {
                     System.out.println("The TYPE property is unknown.: " + typeAttribute);

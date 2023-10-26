@@ -14,25 +14,23 @@ public class RouteHandler {
     public static void main(String[] args) {
         Undertow server = Undertow.builder()
                 .addHttpListener(8080, "localhost")
-                .setHandler(createRoutingHandler())
+                .setHandler(routeHandler())
                 .build();
 
         server.start();
     }
 
-    private static RoutingHandler createRoutingHandler() {
+    private static RoutingHandler routeHandler() {
         RoutingHandler routingHandler = Handlers.routing();
 
         // Exam-related routes
-        routingHandler.add("POST",
-                "/exams",
-                CreateExaminations::createExam);
+        routingHandler.add("POST", "/exam-platform/examinations/exams", CreateExaminations::createExam);
 
-        routingHandler.add("GET", "/exams/", ReadExaminations::readExams);
+        routingHandler.add("GET", "/exams", ReadExaminations::readExams);
 
-        routingHandler.add("PUT", "/exams/1", UpdateExaminations::updateExams);
+        routingHandler.add("PUT", "/exams", UpdateExaminations::updateExams);
 
-        routingHandler.add("DELETE", "/exams/1", DeleteExaminations::handleDeleteExams);
+        routingHandler.add("DELETE", "/exams", DeleteExaminations::handleDeleteExams);
 
         /*// User-related routes
 

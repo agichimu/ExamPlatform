@@ -2,8 +2,8 @@
     <API xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="" xsi:schemaLocation="">
     <UNDERTOW DISPLAY_ENDPOINTS="YES" IO_THREAD_POOL="20" WORKER_THREAD_POOL="40">
         <PORT REST="8080"/>
-        <HOST REST="0.0.0.0"/>
-        <BASE_PATH PORTAL="" REST="/sky_support_crm"/>
+        <HOST REST="localhost"/>
+        <BASE_PATH PORTAL="" REST="/exam-platform/api"/>
     </UNDERTOW>
     </API>
 

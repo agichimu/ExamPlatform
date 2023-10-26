@@ -2,19 +2,20 @@ package examinations;
 
 import Utilities.ConnectionsXmlReader;
 import io.undertow.Undertow;
+import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.util.Headers;
 
 import java.sql.*;
 
 
-public class CreateExaminations {
+public class CreateExaminations implements HttpHandler {
 
     public static void main(String[] args) {
         Undertow server = Undertow.builder()
                 .addHttpListener(8080, "localhost")
                 .setHandler(exchange -> {
-                    if (exchange.getRequestMethod().equalToString("POST") && exchange.getRequestPath().equals("/exams")) {
+                    if (exchange.getRequestMethod().equalToString("POST") && exchange.getRequestPath().equals("/exam-platform/examinations/exams")) {
                         createExam(exchange);
                     } else {
                         exchange.setStatusCode(404);
@@ -34,7 +35,7 @@ public class CreateExaminations {
         }
 
         exchange.getRequestReceiver().receiveFullString((exchange1, message) -> {
-            String examData = "Exam created successfully";
+            var examData = "Exam created successfully";
 
             try {
                 /*Establishing db connection*/
@@ -47,7 +48,8 @@ public class CreateExaminations {
 
                 try (Connection connection = DriverManager.getConnection(jdbcUrl, username, password)) {
                   /*Insertion Query*/
-                    String insertQuery = "INSERT INTO examination_details (instructions, teacher_id, " +
+                    String insertQuery;
+                    insertQuery = "INSERT INTO examination_details (instructions, teacher_id, " +
                             "examination_name, subject_id, question_id, examination_time, date_created, " +
                             "date_modified) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
@@ -69,7 +71,7 @@ public class CreateExaminations {
                         if (rowsAffected > 0) {
                             examData = "Exam created successfully";
                         } else {
-                            examData = "Failed to create the exam";
+                            examData = "Failed to create exams";
                         }
                     }
                 }
@@ -78,7 +80,7 @@ public class CreateExaminations {
                 exchange1.getResponseSender().send(examData);
             } catch (SQLException e) {
                 e.printStackTrace();
-                examData = "Failed to create the exam";
+                examData = "Duplicate entry:Failed to create the exam";
                 exchange1.setStatusCode(500); 
                 exchange1.getResponseHeaders().put(Headers.CONTENT_TYPE, "application/json");
                 exchange1.getResponseSender().send(examData);
@@ -86,7 +88,16 @@ public class CreateExaminations {
         }, (exchange1, error) -> {
             exchange1.setStatusCode(400);
             exchange1.getResponseHeaders().put(Headers.CONTENT_TYPE, "application/json");
-            exchange1.getResponseSender().send("Request Not Successful");
+            exchange1.getResponseSender().send("error\uD83D\uDE1E\uD83D\uDCA5");
         });
+    }
+
+    /**
+     * @param httpServerExchange
+     * @throws Exception
+     */
+    @Override
+    public void handleRequest(HttpServerExchange httpServerExchange) throws Exception {
+
     }
 }
