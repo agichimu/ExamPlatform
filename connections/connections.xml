@@ -3,7 +3,7 @@
     <UNDERTOW DISPLAY_ENDPOINTS="YES" IO_THREAD_POOL="20" WORKER_THREAD_POOL="40">
         <PORT REST="8080"/>
         <HOST REST="localhost"/>
-        <BASE_PATH PORTAL="" REST="/exam-platform/api"/>
+        <BASE_PATH PORTAL="" REST="/exam-platform/api/"/>
     </UNDERTOW>
     </API>
 

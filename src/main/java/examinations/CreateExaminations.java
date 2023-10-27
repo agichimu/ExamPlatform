@@ -1,7 +1,6 @@
 package examinations;
 
 import Utilities.ConnectionsXmlReader;
-import io.undertow.Undertow;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.util.Headers;
@@ -11,29 +10,13 @@ import java.sql.*;
 
 public class CreateExaminations implements HttpHandler {
 
-    public static void main(String[] args) {
-        Undertow server = Undertow.builder()
-                .addHttpListener(8080, "localhost")
-                .setHandler(exchange -> {
-                    if (exchange.getRequestMethod().equalToString("POST") && exchange.getRequestPath().equals("/exam-platform/examinations/exams")) {
-                        createExam(exchange);
-                    } else {
-                        exchange.setStatusCode(404);
-                        exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "application/json");
-                        exchange.getResponseSender().send("Not Found");
-                    }
-                })
-                .build();
-
-        server.start();
-    }
 
     public static void createExam(HttpServerExchange exchange) {
-        if (exchange.isInIoThread()) {
-            exchange.dispatch(() -> createExam(exchange));
-            return;
-        }
 
+        //if (exchange.isInIoThread()) {
+        //     exchange.dispatch(() -> createExam(exchange));
+        //     return;
+        // }
         exchange.getRequestReceiver().receiveFullString((exchange1, message) -> {
             var examData = "Exam created successfully";
 
@@ -92,10 +75,6 @@ public class CreateExaminations implements HttpHandler {
         });
     }
 
-    /**
-     * @param httpServerExchange
-     * @throws Exception
-     */
     @Override
     public void handleRequest(HttpServerExchange httpServerExchange) throws Exception {
 

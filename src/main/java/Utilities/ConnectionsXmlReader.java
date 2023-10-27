@@ -19,19 +19,6 @@ import java.io.File;
 
 
 public class ConnectionsXmlReader {
-    public static void main(String[] args) {
-
-        String portRest = getPortRest();
-        String hostRest = getHostRest();
-        String basePathRest = getBasePathRest();
-
-
-        System.out.println("HOST REST: " + hostRest);
-        System.out.println("PORT REST: " + portRest);
-        System.out.println("BASE_PATH REST: " + basePathRest);
-
-    }
-
     public static String getPortRest() {
         try {
             File connectionsXmlFile = new File("connections/connections.xml");
@@ -42,7 +29,7 @@ public class ConnectionsXmlReader {
             XPathFactory xPathFactory = XPathFactory.newInstance();
             XPath xpath = xPathFactory.newXPath();
 
-            String expression = "/CONFIG/API/UNDERTOW/PORT[@REST]";
+            String expression = "/CONFIG/API/UNDERTOW/PORT[@REST]"; //predicates
             Node portRestNode = (Node) xpath.evaluate(expression, document, XPathConstants.NODE);
 
             if (portRestNode != null) {
@@ -102,7 +89,6 @@ public class ConnectionsXmlReader {
 
         return null;
     }
-
 
 
     public static String getDatabaseName() {
