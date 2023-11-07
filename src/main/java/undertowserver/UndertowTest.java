@@ -9,7 +9,7 @@ import io.undertow.server.handlers.PathHandler;
 
 import java.nio.charset.StandardCharsets;
 
-@SuppressWarnings("CallToPrintStackTrace")
+// @SuppressWarnings("CallToPrintStackTrace")
 public class UndertowTest {
     public static void main(String[] args) throws RuntimeException {
         System.out.println("Starting REST API");
