@@ -55,10 +55,10 @@ public class UpdatePupils implements HttpHandler {
 
             if (rowsAffected > 0) {
                 updateData.put("status", "Pupil details updated successfully");
-                exchange.setStatusCode(StatusCodes.OK); // HTTP 200 - OK
+                exchange.setStatusCode(StatusCodes.OK); // OK
             } else {
                 updateData.put("error", "Failed to update pupil details");
-                exchange.setStatusCode(StatusCodes.NOT_FOUND); // HTTP 404 - Not Found
+                exchange.setStatusCode(StatusCodes.NOT_FOUND); // Not Found
             }
         } catch (SQLException | ClassNotFoundException e) {
             updateData.put("error", "Failed to update pupil details");

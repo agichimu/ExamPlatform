@@ -57,15 +57,15 @@ public class UpdateTeachers implements HttpHandler {
 
             if (rowsAffected > 0) {
                 updateData.put("status", "Teacher details updated successfully");
-                exchange.setStatusCode(StatusCodes.OK); // HTTP 200 - OK
+                exchange.setStatusCode(200); //OK
             } else {
                 updateData.put("error", "Failed to update teacher details");
-                exchange.setStatusCode(StatusCodes.NOT_FOUND); // HTTP 404 - Not Found
+                exchange.setStatusCode(404); // Not Found
             }
         } catch (SQLException | ClassNotFoundException e) {
             updateData.put("error", "Failed to update teacher details");
             updateData.put("details", e.getMessage());
-            exchange.setStatusCode(StatusCodes.INTERNAL_SERVER_ERROR); // Internal Server Error
+            exchange.setStatusCode(500); // Internal Server Error
         }
 
         exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "application/json");

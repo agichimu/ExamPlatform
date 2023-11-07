@@ -6,7 +6,6 @@ import com.google.gson.Gson;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.util.Headers;
-import io.undertow.util.StatusCodes;
 
 import java.sql.SQLException;
 import java.util.LinkedHashMap;
@@ -32,7 +31,7 @@ public class DeleteExaminations implements HttpHandler {
             deleteQuery = "DELETE FROM examination_details WHERE examination_id = ?";
             int rowsAffected = queryManager.delete(deleteQuery, values);
 
-            exchange.setStatusCode(StatusCodes.OK);
+            exchange.setStatusCode(200);
             exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "application/json");
 
             if (rowsAffected > 0) {
@@ -41,7 +40,7 @@ public class DeleteExaminations implements HttpHandler {
                 exchange.getResponseSender().send(gson.toJson("Failed to delete examination"));
             }
         } catch (SQLException | ClassNotFoundException e) {
-            exchange.setStatusCode(StatusCodes.INTERNAL_SERVER_ERROR);
+            exchange.setStatusCode(500);
             e.printStackTrace();
             exchange.getResponseSender().send(gson.toJson("Failed to delete examination: " + e.getMessage()));
         }

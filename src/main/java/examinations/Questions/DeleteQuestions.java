@@ -32,7 +32,7 @@ public class DeleteQuestions implements HttpHandler {
             deleteQuery = "DELETE FROM questions_details WHERE question_id = ?";
             int rowsAffected = queryManager.delete(deleteQuery, values);
 
-            exchange.setStatusCode(StatusCodes.OK);
+            exchange.setStatusCode(200);
             exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "application/json");
 
             if (rowsAffected > 0) {

@@ -2,11 +2,10 @@ package examinations;
 
 import QuerryManager.QueryManager;
 import Rest.RestUtils;
+import com.google.gson.Gson;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.util.Headers;
-import io.undertow.util.StatusCodes;
-import com.google.gson.Gson;
 
 import java.sql.SQLException;
 import java.util.LinkedHashMap;
@@ -37,32 +36,27 @@ public class GetExamination implements HttpHandler {
             if (resultSet != null && !resultSet.isEmpty()) {
                 var examination = resultSet.get(0);
 
-                // Creating a JSON response
+                //JSON response
                 Gson gson = new Gson();
                 String strJsonResponse = gson.toJson(examination);
 
-                // Setting the HTTP response status code to 200 (OK)
-                exchange.setStatusCode(StatusCodes.OK);
+                exchange.setStatusCode(200);
 
-                // Setting the response content type to "application/json"
                 exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "application/json");
 
-                // Sending the JSON response to the client
+
                 exchange.getResponseSender().send(strJsonResponse);
             } else {
-                // Examination not found
-                exchange.setStatusCode(StatusCodes.NOT_FOUND);
+                exchange.setStatusCode(404);
                 exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "application/json");
                 exchange.getResponseSender().send("Error: Examination not found");
             }
         } catch (NumberFormatException e) {
-            // Handle the case where an invalid examinationId is provided
-            exchange.setStatusCode(StatusCodes.BAD_REQUEST);
+            exchange.setStatusCode(400);
             exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "application/json");
             exchange.getResponseSender().send("Error: Invalid examinationId");
         } catch (SQLException | ClassNotFoundException e) {
-            // Handle database errors
-            exchange.setStatusCode(StatusCodes.INTERNAL_SERVER_ERROR);
+            exchange.setStatusCode(500);
             exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "application/json");
             exchange.getResponseSender().send("Error: Internal Server Error");
         }
