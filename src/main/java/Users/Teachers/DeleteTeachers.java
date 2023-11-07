@@ -1,4 +1,4 @@
-package examinations;
+package Users.Teachers;
 
 import QuerryManager.QueryManager;
 import Rest.RestUtils;
@@ -11,11 +11,11 @@ import io.undertow.util.StatusCodes;
 import java.sql.SQLException;
 import java.util.LinkedHashMap;
 
-public class DeleteExaminations implements HttpHandler {
+public class DeleteTeachers implements HttpHandler {
 
     private final QueryManager queryManager;
 
-    public DeleteExaminations(QueryManager queryManager) {
+    public DeleteTeachers(QueryManager queryManager) {
         this.queryManager = queryManager;
     }
 
@@ -25,27 +25,26 @@ public class DeleteExaminations implements HttpHandler {
 
         String deleteQuery = null;
         try {
-            String strExaminationId = RestUtils.getPathVar(exchange, "examinationId");
+            String strTeacherId = RestUtils.getPathVar(exchange, "teacherId");
             LinkedHashMap<String, Object> values = new LinkedHashMap<>();
-            values.put("1", strExaminationId);
+            values.put("1", strTeacherId);
 
-            deleteQuery = "DELETE FROM examination_details WHERE examination_id = ?";
+            deleteQuery = "DELETE FROM teachers_details WHERE teacher_id = ?";
             int rowsAffected = queryManager.delete(deleteQuery, values);
 
             exchange.setStatusCode(StatusCodes.OK);
             exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "application/json");
 
             if (rowsAffected > 0) {
-                exchange.getResponseSender().send(gson.toJson("Examination deleted successfully"));
+                exchange.getResponseSender().send(gson.toJson("Teacher deleted successfully"));
             } else {
-                exchange.getResponseSender().send(gson.toJson("Failed to delete examination"));
+                exchange.getResponseSender().send(gson.toJson("Failed to delete teacher"));
             }
         } catch (SQLException | ClassNotFoundException e) {
             exchange.setStatusCode(StatusCodes.INTERNAL_SERVER_ERROR);
             e.printStackTrace();
-            exchange.getResponseSender().send(gson.toJson("Failed to delete examination: " + e.getMessage()));
+            exchange.getResponseSender().send(gson.toJson("Failed to delete teacher: " + e.getMessage()));
         }
         System.out.println("Delete Query: " + deleteQuery);
-
     }
 }

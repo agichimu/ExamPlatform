@@ -9,6 +9,7 @@ import org.w3c.dom.NodeList;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
@@ -16,9 +17,30 @@ import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
 import java.io.File;
-
-
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 public class ConnectionsXmlReader {
+    public static void main(String[] args) {
+        getDbConnection();
+    }
+    public static Connection getDbConnection() {
+        String databaseURL = ConnectionsXmlReader.getDatabaseURL();
+        String dbName = ConnectionsXmlReader.getDatabaseName();
+        String username = ConnectionsXmlReader.getUsername();
+        String password = ConnectionsXmlReader.getPassword();
+
+        Connection connection = null;
+
+        try {
+            connection = DriverManager.getConnection(databaseURL + dbName, username, password);
+            // System.out.println("Connected to " + connection);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return connection;
+    }
     public static String getPortRest() {
         try {
             File connectionsXmlFile = new File("connections/connections.xml");
@@ -42,6 +64,7 @@ public class ConnectionsXmlReader {
 
         return null;
     }
+
     public static String getHostRest() {
         try {
             File connectionsXmlFile = new File("connections/connections.xml");
@@ -90,7 +113,6 @@ public class ConnectionsXmlReader {
         return null;
     }
 
-
     public static String getDatabaseName() {
         try {
             File connectionsXmlFile = new File("connections/connections.xml");
@@ -105,41 +127,46 @@ public class ConnectionsXmlReader {
             Node databaseNameNode = (Node) xpath.evaluate(expression, document, XPathConstants.NODE);
 
             if (databaseNameNode != null) {
-                String databaseName = databaseNameNode.getTextContent();
+                String databaseName;
+                databaseName = databaseNameNode.getTextContent();
 
                 /*Checking if  TYPE = "CLEARTEXT"*/
-                Element databaseNameElement = (Element) databaseNameNode;
-                String typeAttribute = databaseNameElement.getAttribute("TYPE");
-
-                if ("CLEARTEXT".equalsIgnoreCase(typeAttribute)) {
-                    /*Encrypting && Updating connections.xml file*/
-                    String encryptedDatabaseName = Encryption.encrypt(databaseName);
-                    databaseNameElement.setTextContent(encryptedDatabaseName);
-                    databaseNameElement.setAttribute("TYPE", "ENCRYPTED");
-
-                    /*Updating*/
-
-                    TransformerFactory transformerFactory = TransformerFactory.newInstance();
-                    Transformer transformer = transformerFactory.newTransformer();
-                    DOMSource source = new DOMSource(document);
-                    StreamResult result = new StreamResult(connectionsXmlFile);
-                    transformer.transform(source, result);
-
-                    return encryptedDatabaseName;
-                } else if ("ENCRYPTED".equalsIgnoreCase(typeAttribute)) {
-                    String decryptedDatabaseName = Encryption.decrypt(databaseName);
-
-                    return decryptedDatabaseName;
-                } else {
-                    System.out.println("The TYPE property is unknown.: " + typeAttribute);
-                    return null;
-                }
+                return getString(connectionsXmlFile, document, (Element) databaseNameNode, databaseName);
             } else {
-                System.out.println("⚠\uFE0F Database Name not found.");
+                System.out.println("⚠️ Database Name not found.");
                 return null;
             }
         } catch (Exception e) {
             e.printStackTrace();
+            return null;
+        }
+    }
+
+    private static String getString(File connectionsXmlFile, Document document, Element databaseNameNode, String databaseName) throws TransformerException {
+        Element databaseNameElement = databaseNameNode;
+        String typeAttribute = databaseNameElement.getAttribute("TYPE");
+
+        if ("CLEARTEXT".equalsIgnoreCase(typeAttribute)) {
+            /*Encrypting && Updating connections.xml file*/
+            String encryptedDatabaseName = Encryption.encrypt(databaseName);
+            databaseNameElement.setTextContent(encryptedDatabaseName);
+            databaseNameElement.setAttribute("TYPE", "ENCRYPTED");
+
+            /*Updating*/
+
+            TransformerFactory transformerFactory = TransformerFactory.newInstance();
+            Transformer transformer = transformerFactory.newTransformer();
+            DOMSource source = new DOMSource(document);
+            StreamResult result = new StreamResult(connectionsXmlFile);
+            transformer.transform(source, result);
+
+            return encryptedDatabaseName;
+        } else if ("ENCRYPTED".equalsIgnoreCase(typeAttribute)) {
+            String decryptedDatabaseName = Encryption.decrypt(databaseName);
+
+            return decryptedDatabaseName;
+        } else {
+            System.out.println("The TYPE property is unknown.: " + typeAttribute);
             return null;
         }
     }
@@ -160,31 +187,7 @@ public class ConnectionsXmlReader {
             if (usernameNode != null) {
                 String username = usernameNode.getTextContent();
                 /*Check if  TYPE = "CLEARTEXT"*/
-                Element usernameElement = (Element) usernameNode;
-                String typeAttribute = usernameElement.getAttribute("TYPE");
-
-                if ("CLEARTEXT".equalsIgnoreCase(typeAttribute)) {
-                    String encryptedUsername = Encryption.encrypt(username);
-                    usernameElement.setTextContent(encryptedUsername);
-                    usernameElement.setAttribute("TYPE", "ENCRYPTED");
-
-                    /*Updating the configurations.xml file*/
-                    TransformerFactory transformerFactory = TransformerFactory.newInstance();
-                    Transformer transformer = transformerFactory.newTransformer();
-                    DOMSource source = new DOMSource(document);
-                    StreamResult result = new StreamResult(connectionsXmlFile);
-                    transformer.transform(source, result);
-
-                   // System.out.println("Username: " + encryptedUsername);
-                    return encryptedUsername;
-                } else if ("ENCRYPTED".equalsIgnoreCase(typeAttribute)) {
-                    String decryptedUsername = Encryption.decrypt(username);
-                   // System.out.println("Username (Already Encrypted): " + decryptedUsername);
-                    return decryptedUsername;
-                } else {
-                    System.out.println("The TYPE property is unknown.: " + typeAttribute);
-                    return null;
-                }
+                return getString(connectionsXmlFile, document, (Element) usernameNode, username);
             } else {
                 System.out.println("⚠\uFE0F Username not found.");
                 return null;
@@ -211,33 +214,8 @@ public class ConnectionsXmlReader {
             if (passwordNode != null) {
                 String password = passwordNode.getTextContent();
 
-                /*Check if  TYPE = "CLEARTEXT"*/
-                Element passwordElement = (Element) passwordNode;
-                String typeAttribute = passwordElement.getAttribute("TYPE");
-
-                if ("CLEARTEXT".equalsIgnoreCase(typeAttribute)) {
-
-                    String encryptedPassword = Encryption.encrypt(password);
-                    passwordElement.setTextContent(encryptedPassword);
-                    passwordElement.setAttribute("TYPE", "ENCRYPTED");
-
-
-                    TransformerFactory transformerFactory = TransformerFactory.newInstance();
-                    Transformer transformer = transformerFactory.newTransformer();
-                    DOMSource source = new DOMSource(document);
-                    StreamResult result = new StreamResult(connectionsXmlFile);
-                    transformer.transform(source, result);
-
-                    //System.out.println("Password: " + encryptedPassword);
-                    return encryptedPassword;
-                } else if ("ENCRYPTED".equalsIgnoreCase(typeAttribute)) {
-                    String decryptedPassword = Encryption.decrypt(password);
-                    //System.out.println("Password (Already Encrypted): " + decryptedPassword);
-                    return decryptedPassword;
-                } else {
-                    System.out.println("The TYPE property is unknown.: " + typeAttribute);
-                    return null;
-                }
+                /*Check if  TYPE = "CLEAR-TEXT"*/
+                return getString(connectionsXmlFile, document, (Element) passwordNode, password);
             } else {
                 System.out.println("Error ⚠\uFE0F No password was found.");
                 return null;

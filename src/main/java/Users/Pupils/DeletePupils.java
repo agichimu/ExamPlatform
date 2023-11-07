@@ -1,4 +1,4 @@
-package examinations;
+package Users.Pupils;
 
 import QuerryManager.QueryManager;
 import Rest.RestUtils;
@@ -11,11 +11,11 @@ import io.undertow.util.StatusCodes;
 import java.sql.SQLException;
 import java.util.LinkedHashMap;
 
-public class DeleteExaminations implements HttpHandler {
+public class DeletePupils implements HttpHandler {
 
     private final QueryManager queryManager;
 
-    public DeleteExaminations(QueryManager queryManager) {
+    public DeletePupils(QueryManager queryManager) {
         this.queryManager = queryManager;
     }
 
@@ -25,27 +25,26 @@ public class DeleteExaminations implements HttpHandler {
 
         String deleteQuery = null;
         try {
-            String strExaminationId = RestUtils.getPathVar(exchange, "examinationId");
+            String strPupilId = RestUtils.getPathVar(exchange, "pupilId");
             LinkedHashMap<String, Object> values = new LinkedHashMap<>();
-            values.put("1", strExaminationId);
+            values.put("1", strPupilId);
 
-            deleteQuery = "DELETE FROM examination_details WHERE examination_id = ?";
+            deleteQuery = "DELETE FROM pupils_details WHERE pupil_id = ?";
             int rowsAffected = queryManager.delete(deleteQuery, values);
 
             exchange.setStatusCode(StatusCodes.OK);
             exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "application/json");
 
             if (rowsAffected > 0) {
-                exchange.getResponseSender().send(gson.toJson("Examination deleted successfully"));
+                exchange.getResponseSender().send(gson.toJson("Pupil deleted successfully"));
             } else {
-                exchange.getResponseSender().send(gson.toJson("Failed to delete examination"));
+                exchange.getResponseSender().send(gson.toJson("Failed to delete pupil"));
             }
         } catch (SQLException | ClassNotFoundException e) {
             exchange.setStatusCode(StatusCodes.INTERNAL_SERVER_ERROR);
             e.printStackTrace();
-            exchange.getResponseSender().send(gson.toJson("Failed to delete examination: " + e.getMessage()));
+            exchange.getResponseSender().send(gson.toJson("Failed to delete pupil: " + e.getMessage()));
         }
         System.out.println("Delete Query: " + deleteQuery);
-
     }
 }

@@ -7,14 +7,6 @@ import java.sql.*;
 public class ExamPlatform {
 
     public static void main(String[] args) throws SQLException {
-
-        ConnectionsXmlReader.getDatabaseName();
-        ConnectionsXmlReader.getUsername();
-        ConnectionsXmlReader.getPassword();
-        ConnectionsXmlReader.getDatabaseURL();
-
-        /* getting the encrypted values */
-
         String databaseURL = ConnectionsXmlReader.getDatabaseURL();
         String dbName = ConnectionsXmlReader.getDatabaseName();
         String username = ConnectionsXmlReader.getUsername();
@@ -207,29 +199,6 @@ public class ExamPlatform {
                 preparedStatement.close();
             }
         }
-    }
-    public static void insertRecord(Connection connection, String name, int age) throws SQLException {
-        String query = "INSERT INTO users (name, age) VALUES (?, ?)";
-        PreparedStatement preparedStatement = connection.prepareStatement(query);
-        preparedStatement.setString(1, name);
-        preparedStatement.setInt(2, age);
-        int rowsAffected = preparedStatement.executeUpdate();
-        System.out.println(rowsAffected + " record(s) inserted.");
-    }
-    public static void updateRecord(Connection connection, int userId, String newName) throws SQLException {
-        String query = "UPDATE users SET name = ? WHERE id = ?";
-        PreparedStatement preparedStatement = connection.prepareStatement(query);
-        preparedStatement.setString(1, newName);
-        preparedStatement.setInt(2, userId);
-        int rowsAffected = preparedStatement.executeUpdate();
-        System.out.println(rowsAffected + " record(s) updated.");
-    }
-    public static void deleteRecord(Connection connection, int userId) throws SQLException {
-        String query = "DELETE FROM users WHERE id = ?";
-        PreparedStatement preparedStatement = connection.prepareStatement(query);
-        preparedStatement.setInt(1, userId);
-        int rowsAffected = preparedStatement.executeUpdate();
-        System.out.println(rowsAffected + " record(s) deleted.");
     }
 
 }

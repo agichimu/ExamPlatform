@@ -1,4 +1,4 @@
-package examinations;
+package Users.Pupils;
 
 import QuerryManager.QueryManager;
 import Rest.RestUtils;
@@ -11,51 +11,57 @@ import io.undertow.util.StatusCodes;
 import java.sql.SQLException;
 import java.util.LinkedHashMap;
 
-public class UpdateExaminations implements HttpHandler {
+public class UpdatePupils implements HttpHandler {
 
     private final QueryManager queryManager;
 
-    public UpdateExaminations(QueryManager queryManager) {
+    public UpdatePupils(QueryManager queryManager) {
         this.queryManager = queryManager;
     }
 
     @Override
     public void handleRequest(HttpServerExchange exchange) {
-        String examinationId = RestUtils.getPathVar(exchange, "examinationId");
-        if (examinationId != null) {
-            handleUpdate(exchange, examinationId);
+        String pupilId = RestUtils.getPathVar(exchange, "pupilId");
+        if (pupilId != null) {
+            handleUpdate(exchange, pupilId);
         } else {
             sendBadRequestResponse(exchange);
         }
     }
 
-    private void handleUpdate(HttpServerExchange exchange, String examinationId) {
+    private void handleUpdate(HttpServerExchange exchange, String pupilId) {
         var updateData = new LinkedHashMap<String, Object>();
         Gson gson = new Gson();
 
         try {
-            String updateQuery = "UPDATE examination_details SET instructions = ?, teacher_id = ?, examination_name = ? " +
-                    "WHERE examination_id = ?";
+            String updateQuery = "UPDATE pupils_details " +
+                    "SET first_name = ?, second_name = ?, surname = ?, gender = ?, " +
+                    "admission_no = ?, class_id = ?, admission_date = ? " +
+                    "WHERE pupil_id = ?";
 
             LinkedHashMap<String, Object> requestBodyMap = gson.fromJson(RestUtils.getRequestBody(exchange), LinkedHashMap.class);
 
             LinkedHashMap<String, Object> values = new LinkedHashMap<>();
-            values.put("1", requestBodyMap.get("instructions"));
-            values.put("2", requestBodyMap.get("teacher_id"));
-            values.put("3", requestBodyMap.get("examination_name"));
-            values.put("4", examinationId);
+            values.put("1", requestBodyMap.get("first_name"));
+            values.put("2", requestBodyMap.get("second_name"));
+            values.put("3", requestBodyMap.get("surname"));
+            values.put("4", requestBodyMap.get("gender"));
+            values.put("5", requestBodyMap.get("admission_no"));
+            values.put("6", requestBodyMap.get("class_id"));
+            values.put("7", requestBodyMap.get("admission_date"));
+            values.put("8", pupilId);
 
             int rowsAffected = queryManager.update(updateQuery, values);
 
             if (rowsAffected > 0) {
-                updateData.put("status", "Examination details updated successfully");
+                updateData.put("status", "Pupil details updated successfully");
                 exchange.setStatusCode(StatusCodes.OK); // HTTP 200 - OK
             } else {
-                updateData.put("error", "Failed to update examination details");
+                updateData.put("error", "Failed to update pupil details");
                 exchange.setStatusCode(StatusCodes.NOT_FOUND); // HTTP 404 - Not Found
             }
         } catch (SQLException | ClassNotFoundException e) {
-            updateData.put("error", "Failed to update examination details");
+            updateData.put("error", "Failed to update pupil details");
             updateData.put("details", e.getMessage());
             exchange.setStatusCode(StatusCodes.INTERNAL_SERVER_ERROR); // Internal Server Error
         }

@@ -1,4 +1,4 @@
-package examinations;
+package Users.Teachers;
 
 import QuerryManager.QueryManager;
 import com.google.gson.Gson;
@@ -10,11 +10,11 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.LinkedHashMap;
 
-public class CreateExaminations implements HttpHandler {
+public class CreateTeachers implements HttpHandler {
 
     private final QueryManager queryManager;
 
-    public CreateExaminations(QueryManager queryManager) {
+    public CreateTeachers(QueryManager queryManager) {
         this.queryManager = queryManager;
     }
 
@@ -24,41 +24,46 @@ public class CreateExaminations implements HttpHandler {
     }
 
     public void handle(HttpServerExchange exchange, String message) {
-        var examData = new LinkedHashMap<String, Object>();
+        var teacherData = new LinkedHashMap<String, Object>();
         Gson gson = new Gson();
 
         LinkedHashMap<String, Object> requestBodyMap = gson.fromJson(message, LinkedHashMap.class);
 
         try {
-            String insertQuery = "INSERT INTO examination_details " +
-                    "(instructions, teacher_id, examination_name, subject_id, question_id, examination_time) " +
-                    "VALUES (?, ?, ?, ?, ?, ?)";
+            String insertQuery = "INSERT INTO teachers_details " +
+                    "(first_name, second_name, surname, gender, phone_number, email_address, " +
+                    "tsc_number, role, date_of_birth, department_id) " +
+                    "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
             LinkedHashMap<String, Object> values = new LinkedHashMap<>();
-            values.put("1", requestBodyMap.get("instructions"));
-            values.put("2", requestBodyMap.get("teacher_id"));
-            values.put("3", requestBodyMap.get("examination_name"));
-            values.put("4", requestBodyMap.get("subject_id"));
-            values.put("5", requestBodyMap.get("question_id"));
-            values.put("6", requestBodyMap.get("examination_time"));
+            values.put("1", requestBodyMap.get("first_name"));
+            values.put("2", requestBodyMap.get("second_name"));
+            values.put("3", requestBodyMap.get("surname"));
+            values.put("4", requestBodyMap.get("gender"));
+            values.put("5", requestBodyMap.get("phone_number"));
+            values.put("6", requestBodyMap.get("email_address"));
+            values.put("7", requestBodyMap.get("tsc_number"));
+            values.put("8", requestBodyMap.get("role"));
+            values.put("9", requestBodyMap.get("date_of_birth"));
+            values.put("10", requestBodyMap.get("department_id"));
 
             int rowsAffected = queryManager.insert(insertQuery, values);
 
             if (rowsAffected > 0) {
-                examData.put("status", "Exam created successfully");
+                teacherData.put("status", "Teacher created successfully");
                 exchange.setStatusCode(201);
             } else {
-                examData.put("error", "Failed to create exams");
+                teacherData.put("error", "Failed to create teacher");
                 exchange.setStatusCode(400);
             }
         } catch (SQLException | ClassNotFoundException e) {
-            examData.put("error", "Failed to create exams");
-            examData.put("details", e.getMessage());
+            teacherData.put("error", "Failed to create teacher");
+            teacherData.put("details", e.getMessage());
             exchange.setStatusCode(400);
         }
 
         exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "application/json");
-        exchange.getResponseSender().send(gson.toJson(examData));
+        exchange.getResponseSender().send(gson.toJson(teacherData));
     }
 
     private void error(HttpServerExchange exchange, IOException error) {
