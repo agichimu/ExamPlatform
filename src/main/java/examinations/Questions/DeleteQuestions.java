@@ -41,7 +41,7 @@ public class DeleteQuestions implements HttpHandler {
                 exchange.getResponseSender().send(gson.toJson("Failed to delete question"));
             }
         } catch (SQLException | ClassNotFoundException e) {
-            exchange.setStatusCode(StatusCodes.INTERNAL_SERVER_ERROR);
+            exchange.setStatusCode(500);
             e.printStackTrace();
             exchange.getResponseSender().send(gson.toJson("Failed to delete question: " + e.getMessage()));
         }
