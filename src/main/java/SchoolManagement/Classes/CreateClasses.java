@@ -1,4 +1,4 @@
-package examinations.Choices;
+package SchoolManagement.Classes;
 
 import QuerryManager.QueryManager;
 import com.google.gson.Gson;
@@ -10,11 +10,11 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.LinkedHashMap;
 
-public class CreateChoices implements HttpHandler {
+public class CreateClasses implements HttpHandler {
 
     private final QueryManager queryManager;
 
-    public CreateChoices(QueryManager queryManager) {
+    public CreateClasses(QueryManager queryManager) {
         this.queryManager = queryManager;
     }
 
@@ -24,44 +24,39 @@ public class CreateChoices implements HttpHandler {
     }
 
     public void handle(HttpServerExchange exchange, String message) {
-        var choiceData = new LinkedHashMap<String, Object>();
+        var classData = new LinkedHashMap<String, Object>();
         Gson gson = new Gson();
 
         LinkedHashMap<String, Object> requestBodyMap = gson.fromJson(message, LinkedHashMap.class);
 
         try {
-            String insertQuery = "INSERT INTO choices_details " +
-                    "(choice_label, choice_content, is_right, question_id) " +
-                    "VALUES (?, ?, ?, ?)";
+            String insertQuery = "INSERT INTO class_details " + "(class_name) " + "VALUES (?)";
 
             LinkedHashMap<String, Object> values = new LinkedHashMap<>();
-            values.put("1", requestBodyMap.get("choice_label"));
-            values.put("2", requestBodyMap.get("choice_content"));
-            values.put("3", requestBodyMap.get("is_right"));
-            values.put("4", requestBodyMap.get("question_id"));
+            values.put("1", requestBodyMap.get("class_name"));
 
             int rowsAffected = queryManager.insert(insertQuery, values);
 
             if (rowsAffected > 0) {
-                choiceData.put("status", "Choice created successfully");
+                classData.put("status", "Class created successfully");
                 exchange.setStatusCode(201);
             } else {
-                choiceData.put("error", "Failed to create choice");
+                classData.put("error", "Failed to create class");
                 exchange.setStatusCode(400);
             }
         } catch (SQLException | ClassNotFoundException e) {
-            choiceData.put("error", "Failed to create choice");
-            choiceData.put("details", e.getMessage());
-            exchange.setStatusCode(400);
+            classData.put("error", "Failed to create class");
+            classData.put("details", e.getMessage());
+            exchange.setStatusCode(500); // internal server error
         }
 
         exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "application/json");
-        exchange.getResponseSender().send(gson.toJson(choiceData));
+        exchange.getResponseSender().send(gson.toJson(classData));
     }
 
     private void error(HttpServerExchange exchange, IOException error) {
-        exchange.setStatusCode(400);
+        exchange.setStatusCode(500);
         exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "application/json");
-        exchange.getResponseSender().send("Error in request");
+        exchange.getResponseSender().send("Error processing request: " + error.getMessage());
     }
 }

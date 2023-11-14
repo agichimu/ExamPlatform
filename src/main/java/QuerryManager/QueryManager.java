@@ -79,7 +79,9 @@ public class QueryManager {
         }
     }
 
-    public ResultSetMetaData getMetaData() {
+    /*
+       public ResultSetMetaData getMetaData() {
         return this.metaData;
-    }
+       }
+       */
 }

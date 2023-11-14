@@ -1,4 +1,4 @@
-package examinations.choices;
+package examinations.Choices;
 
 import Utilities.ConnectionsXmlReader;
 import com.google.gson.Gson;

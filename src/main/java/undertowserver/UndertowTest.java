@@ -9,7 +9,6 @@ import io.undertow.server.handlers.PathHandler;
 
 import java.nio.charset.StandardCharsets;
 
-// @SuppressWarnings("CallToPrintStackTrace")
 public class UndertowTest {
     public static void main(String[] args) throws RuntimeException {
         System.out.println("Starting REST API");
@@ -21,13 +20,16 @@ public class UndertowTest {
 
             try {
                 PathHandler routeHandler = Handlers.path()
+                        .addPrefixPath(basePathRest + "/management/departments", Routes.Departments())
+                        .addPrefixPath(basePathRest + "/management/classes", Routes.Classes())
+                        .addPrefixPath(basePathRest + "/management/subjects", Routes.Subjects())
                         .addPrefixPath(basePathRest + "/examinations", Routes.examinations())
                         .addPrefixPath(basePathRest + "/examinations/questions", Routes.Questions())
                         .addPrefixPath(basePathRest + "/examinations/questions/choices", Routes.Choices())
                         .addPrefixPath(basePathRest + "/users/pupils", Routes.Pupils())
                         .addPrefixPath(basePathRest + "/users/teachers", Routes.Teachers())
-                        .addPrefixPath(basePathRest + "/users/guardians", Routes.Guardians());
-
+                        .addPrefixPath(basePathRest + "/users/guardians", Routes.Guardians())
+                        .addPrefixPath(basePathRest + "/users/guardians/roles", Routes.GuardianRoles());
 
                 Undertow server = Undertow.builder()
                         .setServerOption(UndertowOptions.DECODE_URL, true)

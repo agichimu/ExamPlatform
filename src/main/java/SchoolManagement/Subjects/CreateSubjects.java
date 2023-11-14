@@ -1,4 +1,4 @@
-package examinations.Choices;
+package SchoolManagement.Subjects;
 
 import QuerryManager.QueryManager;
 import com.google.gson.Gson;
@@ -10,11 +10,11 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.LinkedHashMap;
 
-public class CreateChoices implements HttpHandler {
+public class CreateSubjects implements HttpHandler {
 
     private final QueryManager queryManager;
 
-    public CreateChoices(QueryManager queryManager) {
+    public CreateSubjects(QueryManager queryManager) {
         this.queryManager = queryManager;
     }
 
@@ -24,39 +24,38 @@ public class CreateChoices implements HttpHandler {
     }
 
     public void handle(HttpServerExchange exchange, String message) {
-        var choiceData = new LinkedHashMap<String, Object>();
+        var subjectData = new LinkedHashMap<String, Object>();
         Gson gson = new Gson();
 
         LinkedHashMap<String, Object> requestBodyMap = gson.fromJson(message, LinkedHashMap.class);
 
         try {
-            String insertQuery = "INSERT INTO choices_details " +
-                    "(choice_label, choice_content, is_right, question_id) " +
-                    "VALUES (?, ?, ?, ?)";
+            String insertQuery = "INSERT INTO subject_details " +
+                    "(subject_name, subject_code, department_id, date_created, date_modified) " +
+                    "VALUES (?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)";
 
             LinkedHashMap<String, Object> values = new LinkedHashMap<>();
-            values.put("1", requestBodyMap.get("choice_label"));
-            values.put("2", requestBodyMap.get("choice_content"));
-            values.put("3", requestBodyMap.get("is_right"));
-            values.put("4", requestBodyMap.get("question_id"));
+            values.put("1", requestBodyMap.get("subject_name"));
+            values.put("2", requestBodyMap.get("subject_code"));
+            values.put("3", requestBodyMap.get("department_id"));
 
             int rowsAffected = queryManager.insert(insertQuery, values);
 
             if (rowsAffected > 0) {
-                choiceData.put("status", "Choice created successfully");
+                subjectData.put("status", "Subject created successfully");
                 exchange.setStatusCode(201);
             } else {
-                choiceData.put("error", "Failed to create choice");
+                subjectData.put("error", "Failed to create subject");
                 exchange.setStatusCode(400);
             }
         } catch (SQLException | ClassNotFoundException e) {
-            choiceData.put("error", "Failed to create choice");
-            choiceData.put("details", e.getMessage());
+            subjectData.put("error", "Failed to create subject");
+            subjectData.put("details", e.getMessage());
             exchange.setStatusCode(400);
         }
 
         exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "application/json");
-        exchange.getResponseSender().send(gson.toJson(choiceData));
+        exchange.getResponseSender().send(gson.toJson(subjectData));
     }
 
     private void error(HttpServerExchange exchange, IOException error) {
