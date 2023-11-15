@@ -1,17 +1,22 @@
-/*
 package Users.Guardians;
 
-import Utilities.ConnectionsXmlReader;
+import QuerryManager.QueryManager;
+import Rest.RestUtils;
 import com.google.gson.Gson;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
 import io.undertow.util.Headers;
 
-import java.sql.*;
-import java.util.HashMap;
-import java.util.Map;
+import java.sql.SQLException;
+import java.util.*;
 
 public class GetGuardian implements HttpHandler {
+
+    private final QueryManager queryManager;
+
+    public GetGuardian(QueryManager queryManager) {
+        this.queryManager = queryManager;
+    }
 
     @Override
     public void handleRequest(HttpServerExchange exchange) {
@@ -21,45 +26,48 @@ public class GetGuardian implements HttpHandler {
         }
 
         Gson gson = new Gson();
-        Map<String, Object> guardianDetails = new HashMap<>();
+        String guardianId = RestUtils.getPathVar(exchange, "guardianId");
 
-        try {
-            try (Connection connection = ConnectionsXmlReader.getDbConnection()) {
-                String selectQuery = "SELECT * FROM guardian_details WHERE guardian_id = ?";
-
-                try (PreparedStatement preparedStatement = connection.prepareStatement(selectQuery)) {
-                    try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                        if (resultSet.next()) {
-                            guardianDetails.put("guardian_id", resultSet.getLong("guardian_id"));
-                            guardianDetails.put("first_name", resultSet.getString("first_name"));
-                            guardianDetails.put("second_name", resultSet.getString("second_name"));
-                            guardianDetails.put("surname", resultSet.getString("surname"));
-                            guardianDetails.put("phone_number", resultSet.getString("phone_number"));
-                            guardianDetails.put("email_address", resultSet.getString("email_address"));
-                            guardianDetails.put("gender", resultSet.getString("gender"));
-                            guardianDetails.put("date_created", resultSet.getString("date_created"));
-                            guardianDetails.put("date_modified", resultSet.getString("date_modified"));
-                        }
-                    }
-                }
-            }
-
-            if (!guardianDetails.isEmpty()) {
+        if (guardianId != null) {
+            try {
+                Map<String, Object> guardianMap;
+                guardianMap = Collections.unmodifiableMap(getGuardian(guardianId));
                 exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "application/json");
-                exchange.getResponseSender().send(gson.toJson(guardianDetails));
-            } else {
-                String errorResponse = "Guardian with ID 1 not found";
-                exchange.setStatusCode(404);
+                exchange.getResponseSender().send(gson.toJson(guardianMap));
+            } catch (SQLException e) {
+                e.printStackTrace();
+                String errorResponse = "Failed to fetch guardian";
+                exchange.setStatusCode(500);
                 exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "application/json");
                 exchange.getResponseSender().send(errorResponse);
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
-            String errorResponse = "Failed to fetch guardian data from the database";
-            exchange.setStatusCode(500);
+        } else {
+            String errorResponse = "Guardian ID not provided";
+            exchange.setStatusCode(400);
             exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "application/json");
             exchange.getResponseSender().send(errorResponse);
         }
     }
+
+    private Map<String, Object> getGuardian(String guardianId) throws SQLException {
+        Map<String, Object> guardianMap = new HashMap<>();
+
+        String selectQuery = "SELECT * FROM guardian_details WHERE guardian_id = ?";
+
+        Map<String, Object> paramMap = new HashMap<>();
+        paramMap.put("guardianId", guardianId);
+
+        try {
+            List<LinkedHashMap<String, Object>> results = queryManager.select(selectQuery, paramMap);
+
+            if (!results.isEmpty()) {
+                guardianMap = results.get(0);
+            }
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+
+        return guardianMap;
+    }
+
 }
-*/

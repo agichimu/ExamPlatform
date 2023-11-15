@@ -17,25 +17,38 @@ public class QueryManager {
     }
 
 
-    public List<LinkedHashMap<String, Object>> select(String sqlQuery, Map<Integer, Object> values) throws ClassNotFoundException, SQLException {
-        try (Connection connection = establishConnection();
-             PreparedStatement statement = connection.prepareStatement(sqlQuery);
-             ResultSet resultSet = statement.executeQuery()) {
+    public List<LinkedHashMap<String, Object>> select(String sqlQuery, Map<String, Object> values) throws ClassNotFoundException, SQLException {
+        try (Connection connection = establishConnection()) {
+            try (PreparedStatement statement = connection.prepareStatement(sqlQuery)) {
+                setPreparedStatementValues(statement, values);
+                try (ResultSet resultSet = statement.executeQuery()) {
+                    metaData = resultSet.getMetaData(); /* Setting the metadata */
+                    int count = metaData.getColumnCount();
+                    List<LinkedHashMap<String, Object>> results = new ArrayList<>();
 
-            metaData = resultSet.getMetaData(); /* Setting the metadata */
-            int count = metaData.getColumnCount();
-            List<LinkedHashMap<String, Object>> results = new ArrayList<>();
-
-            while (resultSet.next()) {
-                LinkedHashMap<String, Object> result = new LinkedHashMap<>();
-                for (int i = 1; i <= count; i++) {
-                    result.put(metaData.getColumnLabel(i), resultSet.getObject(i));
+                    while (resultSet.next()) {
+                        LinkedHashMap<String, Object> result = new LinkedHashMap<>();
+                        for (int i = 1; i <= count; i++) {
+                            result.put(metaData.getColumnLabel(i), resultSet.getObject(i));
+                        }
+                        results.add(result);
+                    }
+                    return results;
                 }
-                results.add(result);
             }
-            return results;
         }
     }
+
+    private void setPreparedStatementValues(PreparedStatement statement, Map<String, Object> values) throws SQLException {
+        if (values != null) {
+            int index = 1;
+            for (Map.Entry<String, Object> entry : values.entrySet()) {
+                statement.setObject(index++, entry.getValue());
+            }
+        }
+    }
+
+
 
     public int insert(String sqlQuery, LinkedHashMap<String, Object> values) throws ClassNotFoundException, SQLException {
         try (Connection connection = establishConnection();

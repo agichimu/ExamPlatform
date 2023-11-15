@@ -13,14 +13,12 @@ import SchoolManagement.Subjects.CreateSubjects;
 import SchoolManagement.Subjects.DeleteSubjects;
 import SchoolManagement.Subjects.GetSubjects;
 import SchoolManagement.Subjects.UpdateSubjects;
-import Users.Guardians.CreateGuardian;
-import Users.Guardians.DeleteGuardian;
-import Users.Guardians.GetGuardians;
-import Users.Guardians.UpdateGuardians;
-import Users.Pupils.CreatePupils;
-import Users.Pupils.DeletePupils;
-import Users.Pupils.GetPupils;
-import Users.Pupils.UpdatePupils;
+import Users.Guardians.*;
+import Users.Guardians.guardianroles.CreateGuardianRoles;
+import Users.Guardians.guardianroles.DeleteGuardianRoles;
+import Users.Guardians.guardianroles.GetGuardianRoles;
+import Users.Guardians.guardianroles.UpdateGuardianRoles;
+import Users.Pupils.*;
 import Users.Teachers.CreateTeachers;
 import Users.Teachers.DeleteTeachers;
 import Users.Teachers.GetTeachers;
@@ -57,6 +55,7 @@ public class Routes {
         QueryManager queryManager = new QueryManager();
         return Handlers.routing()
                 .get("", new Dispatcher(new GetPupils()))
+                .get("/{pupilId}", new Dispatcher(new GetPupil(queryManager)))
                 .post("", new BlockingHandler(new CreatePupils(queryManager)))
                 .add(Methods.PATCH, "/{pupilId}", new BlockingHandler(new UpdatePupils(queryManager)))
                 .delete("/{pupilId}", new Dispatcher(new DeletePupils(queryManager)))
@@ -80,7 +79,7 @@ public class Routes {
         QueryManager queryManager = new QueryManager();
         return Handlers.routing()
                 .get("", new Dispatcher(new GetGuardians()))
-               // .get("/{guardian_id}", new Dispatcher(new GetGuardian()))
+               .get("/{guardianId}", new Dispatcher(new GetGuardian(queryManager)))
                  .post("", new BlockingHandler(new CreateGuardian(queryManager)))
                 .add(Methods.PATCH, "/{guardianId}", new BlockingHandler(new UpdateGuardians(queryManager)))
                  .delete("/{guardianId}", new Dispatcher(new DeleteGuardian(queryManager)))
@@ -91,11 +90,11 @@ public class Routes {
     public static RoutingHandler GuardianRoles() {
         QueryManager queryManager = new QueryManager();
         return Handlers.routing()
-                //.get("", new Dispatcher(new GetGuardianRoles()))
-                // .get("/{guardianrolesId}", new Dispatcher(new GetGuardian()))
-                //.post("", new BlockingHandler(new CreateGuardian(queryManager)))
-                //.add(Methods.PATCH, "/{guardianrolesId}", new BlockingHandler(new UpdateGuardians(queryManager)))
-                //.delete("/{guardianrolesId}", new Dispatcher(new DeleteGuardian(queryManager)))
+                .get("", new Dispatcher(new GetGuardianRoles()))
+                // .get("/{roleId}", new Dispatcher(new GetGuardian()))
+                .post("", new BlockingHandler(new CreateGuardianRoles(queryManager)))
+                .add(Methods.PATCH, "/{roleId}", new BlockingHandler(new UpdateGuardianRoles(queryManager)))
+                .delete("/{roleId}", new Dispatcher(new DeleteGuardianRoles(queryManager)))
                 .add(Methods.OPTIONS, "/*", new CorsHandler())
                 .setInvalidMethodHandler(new Dispatcher(new InvalidMethod()))
                 .setFallbackHandler(new Dispatcher(new FallBack()));
@@ -128,10 +127,10 @@ public class Routes {
         QueryManager queryManager = new QueryManager();
         return Handlers.routing()
                 .get("", new Dispatcher(new GetClasses()))
-                // .get("/{ClassesId}", new Dispatcher(new GetClasses()))
+                // .get("/{classId}", new Dispatcher(new GetClasses()))
                 .post("", new BlockingHandler(new CreateClasses(queryManager)))
-                .add(Methods.PATCH, "/{ClassesId}", new BlockingHandler(new UpdateClasses(queryManager)))
-                .delete("/{ClassesId}", new Dispatcher(new DeleteClasses(queryManager)))
+                .add(Methods.PATCH, "/{classId}", new BlockingHandler(new UpdateClasses(queryManager)))
+                .delete("/{classId}", new Dispatcher(new DeleteClasses(queryManager)))
                 .add(Methods.OPTIONS, "/*", new CorsHandler())
                 .setInvalidMethodHandler(new Dispatcher(new InvalidMethod()))
                 .setFallbackHandler(new Dispatcher(new FallBack()));
@@ -140,10 +139,10 @@ public class Routes {
         QueryManager queryManager = new QueryManager();
         return Handlers.routing()
                 .get("", new Dispatcher(new GetDepartments()))
-                // .get("/{DepartmentsId}", new Dispatcher(new GetDepartments()))
+                // .get("/{departmentId}", new Dispatcher(new GetDepartments()))
                 .post("", new BlockingHandler(new CreateDepartments(queryManager)))
-                .add(Methods.PATCH, "/{DepartmentsId}", new BlockingHandler(new UpdateDepartments(queryManager)))
-                .delete("/{DepartmentsId}", new Dispatcher(new DeleteDepartments(queryManager)))
+                .add(Methods.PATCH, "/{departmentId}", new BlockingHandler(new UpdateDepartments(queryManager)))
+                .delete("/{departmentId}", new Dispatcher(new DeleteDepartments(queryManager)))
                 .add(Methods.OPTIONS, "/*", new CorsHandler())
                 .setInvalidMethodHandler(new Dispatcher(new InvalidMethod()))
                 .setFallbackHandler(new Dispatcher(new FallBack()));
@@ -152,10 +151,10 @@ public class Routes {
         QueryManager queryManager = new QueryManager();
         return Handlers.routing()
                 .get("", new Dispatcher(new GetSubjects()))
-                // .get("/{SubjectsId}", new Dispatcher(new GetSubjects()))
+                // .get("/{subjectId}", new Dispatcher(new GetSubjects()))
                 .post("", new BlockingHandler(new CreateSubjects(queryManager)))
-                .add(Methods.PATCH, "/{SubjectsId}", new BlockingHandler(new UpdateSubjects(queryManager)))
-                .delete("/{SubjectsId}", new Dispatcher(new DeleteSubjects(queryManager)))
+                .add(Methods.PATCH, "/{subjectId}", new BlockingHandler(new UpdateSubjects(queryManager)))
+                .delete("/{subjectId}", new Dispatcher(new DeleteSubjects(queryManager)))
                 .add(Methods.OPTIONS, "/*", new CorsHandler())
                 .setInvalidMethodHandler(new Dispatcher(new InvalidMethod()))
                 .setFallbackHandler(new Dispatcher(new FallBack()));

@@ -1,4 +1,4 @@
-package SchoolManagement.Departments;
+package Users.Guardians.guardianroles;
 
 import QuerryManager.QueryManager;
 import Rest.RestUtils;
@@ -10,11 +10,11 @@ import io.undertow.util.Headers;
 import java.sql.SQLException;
 import java.util.LinkedHashMap;
 
-public class DeleteDepartments implements HttpHandler {
+public class DeleteGuardianRoles implements HttpHandler {
 
     private final QueryManager queryManager;
 
-    public DeleteDepartments(QueryManager queryManager) {
+    public DeleteGuardianRoles(QueryManager queryManager) {
         this.queryManager = queryManager;
     }
 
@@ -24,27 +24,26 @@ public class DeleteDepartments implements HttpHandler {
 
         String deleteQuery = null;
         try {
-            String strDepartmentId = RestUtils.getPathVar(exchange, "departmentId");
+            String roleId = RestUtils.getPathVar(exchange, "roleId");
             LinkedHashMap<String, Object> values = new LinkedHashMap<>();
-            values.put("1", strDepartmentId);
+            values.put("1", roleId);
 
-            deleteQuery = "DELETE FROM department_details WHERE department_id = ?";
+            deleteQuery = "DELETE FROM guardian_roles WHERE role_id = ?";
             int rowsAffected = queryManager.delete(deleteQuery, values);
 
             exchange.setStatusCode(200);
             exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "application/json");
 
             if (rowsAffected > 0) {
-                exchange.getResponseSender().send(gson.toJson("Department deleted successfully"));
+                exchange.getResponseSender().send(gson.toJson("Guardian role deleted successfully"));
             } else {
-                exchange.getResponseSender().send(gson.toJson("department not found"));
+                exchange.getResponseSender().send(gson.toJson("Failed to delete guardian role"));
             }
         } catch (SQLException | ClassNotFoundException e) {
             exchange.setStatusCode(500);
             e.printStackTrace();
-            exchange.getResponseSender().send(gson.toJson("Failed to delete department: " + e.getMessage()));
+            exchange.getResponseSender().send(gson.toJson("Failed to delete guardian role: " + e.getMessage()));
         }
         System.out.println("Delete Query: " + deleteQuery);
-
     }
 }
