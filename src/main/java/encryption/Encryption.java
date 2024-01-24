@@ -11,12 +11,10 @@ import java.security.spec.KeySpec;
 import java.util.Base64;
 
 public class Encryption {
-    // Class private variables
     private static final String SECRET_KEY = "b_r_u_t_a_l_d_o_c_k";
 
     private static final String SALT = "xander!!!!";
 
-    // This method use to encrypt to string
     public static String encrypt(String strToEncrypt) {
         try {
 
@@ -38,16 +36,14 @@ public class Encryption {
             // Return encrypted string
             return Base64.getEncoder ().encodeToString (cipher.doFinal (strToEncrypt.getBytes (StandardCharsets.UTF_8)));
         } catch (Exception e) {
-            System.out.println ("Error while encrypting: " + e);
+            System.err.println ("Error while encrypting: " + e);
         }
         return null;
     }
 
-    // This method use to decrypt to string
+ //decrypting
     public static String decrypt(String strToDecrypt) {
         try {
-
-            // Default byte array
             byte[] iv = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
             // Create IvParameterSpec object and assign with
             // constructor
@@ -67,26 +63,8 @@ public class Encryption {
             // Return decrypted string
             return new String (cipher.doFinal (Base64.getDecoder ().decode (strToDecrypt)));
         } catch (Exception e) {
-            System.out.println ("Error while decrypting: " + e);
+            System.err.println ("Error while decrypting: " + e);
         }
         return null;
     }
-    // driver code
-
-    // public static void main(String[] args) {
-    //     // Create String variables
-    //     String originalString = "Alexander";
-    //
-    //     // Call encryption method
-    //     String encryptedString = Encryption.encrypt (originalString);
-    //
-    //     // Call decryption method
-    //     String decryptedString = Encryption.decrypt (encryptedString);
-    //
-    //     // Print all strings
-    //     System.out.println (originalString);
-    //     System.out.println (encryptedString);
-    //     System.out.println (decryptedString);
-    // }
-}
-
+   }

@@ -9,8 +9,11 @@ import io.undertow.server.handlers.PathHandler;
 
 import java.nio.charset.StandardCharsets;
 
+import static Utilities.ConnectionsXmlReader.getDbConnection;
+
 public class UndertowTest {
     public static void main(String[] args) throws RuntimeException {
+        getDbConnection();
         System.out.println("Starting REST API");
 
         try {
@@ -47,8 +50,7 @@ public class UndertowTest {
                 throw new RuntimeException(e);
             }
         } catch (Exception e) {
-            e.printStackTrace();
-            System.err.println("Error in establishing the database connection or starting the server.");
+            System.err.println("Error starting the server.");
         }
     }
 }

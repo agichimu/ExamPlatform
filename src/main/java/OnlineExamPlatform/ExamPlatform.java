@@ -1,3 +1,4 @@
+/*
 package OnlineExamPlatform;
 
 import Utilities.ConnectionsXmlReader;
@@ -7,35 +8,19 @@ import java.sql.*;
 public class ExamPlatform {
 
     public static void main(String[] args) throws SQLException {
-        String databaseURL = ConnectionsXmlReader.getDatabaseURL();
-        String dbName = ConnectionsXmlReader.getDatabaseName();
-        String username = ConnectionsXmlReader.getUsername();
-        String password = ConnectionsXmlReader.getPassword();
+        Connection connection = ConnectionsXmlReader.getDbConnection();
 
-        Connection connection = null;
         try {
-            String jdbcUrl = databaseURL + dbName;
-            String dbUsername;
-            dbUsername = username;
-            String dbPassword;
-            dbPassword = password;
-
-            // Class.forName("com.mysql.cj.jdbc.Driver");
-
-            connection = DriverManager.getConnection(jdbcUrl, dbUsername, dbPassword);
-
-            System.out.println("Connected to the database.");
-
             String pupilIdToSearch = "1";
             String teacherIdToSearch = "1";
-            displayExamsSetByATeacher(connection, teacherIdToSearch);
+            //displayExamsSetByATeacher(connection, teacherIdToSearch);
             reportOnPupilAnswers(connection, pupilIdToSearch);
             reportOnTop5pupils(connection);
             reportSheetForAllPupils(connection);
 
         } catch (Exception e) {
             e.printStackTrace();
-        }finally {
+        } finally {
             if (connection != null) {
                 connection.close();
                 System.out.println("Database connection closed.");
@@ -43,7 +28,9 @@ public class ExamPlatform {
         }
     }
 
-    public static void displayExamsSetByATeacher(Connection connection, String teacher_id) throws SQLException {
+
+    */
+/*public static void displayExamsSetByATeacher(Connection connection, String teacher_id) throws SQLException {
         ResultSet resultSet = null;
         PreparedStatement preparedStatement = null;
         try {
@@ -82,7 +69,8 @@ public class ExamPlatform {
                 preparedStatement.close();
             }
         }
-    }
+    }*//*
+
 
 
     public static void reportOnPupilAnswers(Connection connection, Object pupil_id) throws SQLException {
@@ -202,3 +190,4 @@ public class ExamPlatform {
     }
 
 }
+*/

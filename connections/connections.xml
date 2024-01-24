@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?><CONFIG>
-    <API xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="" xsi:schemaLocation="">
+    <API xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="">
     <UNDERTOW DISPLAY_ENDPOINTS="YES" IO_THREAD_POOL="20" WORKER_THREAD_POOL="40">
-        <PORT REST="8080"/>
+        <PORT REST="8081"/>
         <HOST REST="localhost"/>
         <BASE_PATH PORTAL="" REST="/exam-platform/api"/>
     </UNDERTOW>
@@ -11,9 +11,7 @@
         <DATABASE_TYPE>MYSQL</DATABASE_TYPE>
         <HOST>Localhost</HOST>
         <PORT>3306</PORT>
-        <DATABASE_DRIVER>com.mysql.cj.jdbc.Driver</DATABASE_DRIVER>
-        <DATABASE_URL>jdbc:mysql://localhost:3306/</DATABASE_URL>
-        <DATABASE_NAME TYPE="ENCRYPTED">Cd92NT+mGqbP5jsXs7dJmIVZLquFPc+24P9g70Bsxvg=</DATABASE_NAME>
+        <DATABASE_NAME TYPE="ENCRYPTED">1fL/eE7ODCf+A6t509QZPw==</DATABASE_NAME>
         <USERNAME TYPE="ENCRYPTED">XUkRkCMWytiCRkwfonjQSA==</USERNAME>
         <PASSWORD TYPE="ENCRYPTED">lu/jl4MR9OQ70YNWUbdE0Q==</PASSWORD>
     </DATABASE>

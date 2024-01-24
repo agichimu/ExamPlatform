@@ -1,10 +1,12 @@
 package Utilities;
 
 import encryption.Encryption;
+import org.apache.commons.dbcp2.BasicDataSource;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -18,32 +20,79 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathFactory;
 import java.io.File;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.time.Duration;
+
 public class ConnectionsXmlReader {
-    public static void main(String[] args) {
-        getDbConnection();
-    }
+    private static final Logger logger = LogManager.getLogger(ConnectionsXmlReader.class);
+
+    private static final String CONNECTIONS_XML_PATH = "connections/connections.xml";
+    private static BasicDataSource dataSource;
+
     public static Connection getDbConnection() {
-        String databaseURL = ConnectionsXmlReader.getDatabaseURL();
-        String dbName = ConnectionsXmlReader.getDatabaseName();
-        String username = ConnectionsXmlReader.getUsername();
-        String password = ConnectionsXmlReader.getPassword();
+        String databaseType = getDatabaseType();
+        String databaseName = getDatabaseName();
+        String username = getUsername();
+        String password = getPassword();
 
-        Connection connection = null;
+        Connection con = null;
 
         try {
-            connection = DriverManager.getConnection(databaseURL + dbName, username, password);
-            // System.out.println("Connected to " + connection);
+            if (databaseType != null) {
+                con = getConnection(databaseType, databaseName, username, password);
+            }
+            System.out.println("Connected to : " + databaseName + " database");
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.err.println("Failed to establish a database connection.");
         }
 
-        return connection;
+        return con;
     }
-    public static String getPortRest() {
+
+    private static Connection getConnection(String databaseType, String databaseName, String username, String password) throws SQLException {
+        String connectionString;
+        String jdbcDriver;
+        String host = getDatabaseHost();
+        String port = getDatabasePort();
+
+        connectionString = switch (databaseType.toUpperCase()) {
+            case "MYSQL" -> {
+                jdbcDriver = "com.mysql.cj.jdbc.Driver";
+                yield "jdbc:mysql://" + host + ":" + port + "/" + databaseName;
+            }
+            case "POSTGRESQL" -> {
+                jdbcDriver = "org.postgresql.Driver";
+                yield "jdbc:postgresql://" + host + ":" + port + "/" + databaseName;
+            }
+            case "MICROSOFTSQL" -> {
+                jdbcDriver = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
+                yield "jdbc:sqlserver://" + host + ":" + port + "/" + databaseName;
+            }
+            default -> throw new IllegalArgumentException("Unsupported database type: " + databaseType);
+        };
+
         try {
-            File connectionsXmlFile = new File("connections/connections.xml");
+            Class.forName(jdbcDriver);
+        } catch (ClassNotFoundException e) {
+            throw new SQLException("Failed to load JDBC driver for database type: " + databaseType, e);
+        }
+
+        if (dataSource == null) {
+            dataSource = new BasicDataSource();
+            dataSource.setUrl(connectionString);
+            dataSource.setUsername(username);
+            dataSource.setPassword(password);
+            dataSource.setMaxTotal(100);
+            dataSource.setMaxIdle(10);
+            dataSource.setMinIdle(5);
+            dataSource.setMaxWait(Duration.ofSeconds(10));
+        }
+        return dataSource.getConnection();
+    }
+
+    private static String getDatabaseHost() {
+        try {
+            File connectionsXmlFile = new File(CONNECTIONS_XML_PATH);
             DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
             Document document = documentBuilder.parse(connectionsXmlFile);
@@ -51,23 +100,24 @@ public class ConnectionsXmlReader {
             XPathFactory xPathFactory = XPathFactory.newInstance();
             XPath xpath = xPathFactory.newXPath();
 
-            String expression = "/CONFIG/API/UNDERTOW/PORT[@REST]"; //predicates
-            Node portRestNode = (Node) xpath.evaluate(expression, document, XPathConstants.NODE);
+            String expression = "/CONFIG/DATABASE/HOST";
+            Node hostNode = (Node) xpath.evaluate(expression, document, XPathConstants.NODE);
 
-            if (portRestNode != null) {
-                return portRestNode.getAttributes().getNamedItem("REST").getNodeValue();
+            if (hostNode != null) {
+                return hostNode.getTextContent();
+            } else {
+                System.err.println("Database Host not found");
+                return null;
             }
-
         } catch (Exception e) {
-            e.printStackTrace();
+            System.err.println("Error while getting database host from XML configuration");
+            return null;
         }
-
-        return null;
     }
 
-    public static String getHostRest() {
+    private static String getDatabasePort() {
         try {
-            File connectionsXmlFile = new File("connections/connections.xml");
+            File connectionsXmlFile = new File(CONNECTIONS_XML_PATH);
             DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
             Document document = documentBuilder.parse(connectionsXmlFile);
@@ -75,42 +125,51 @@ public class ConnectionsXmlReader {
             XPathFactory xPathFactory = XPathFactory.newInstance();
             XPath xpath = xPathFactory.newXPath();
 
-            String expression = "/CONFIG/API/UNDERTOW/HOST[@REST]";
-            Node hostRestNode = (Node) xpath.evaluate(expression, document, XPathConstants.NODE);
+            String expression = "/CONFIG/DATABASE/PORT";
+            Node portNode = (Node) xpath.evaluate(expression, document, XPathConstants.NODE);
 
-            if (hostRestNode != null) {
-                return hostRestNode.getAttributes().getNamedItem("REST").getNodeValue();
+            if (portNode != null) {
+                return portNode.getTextContent();
+            } else {
+                System.err.println("Database Port not found.");
+                return null;
             }
-
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Error while getting database port from XML configuration.", e);
+            return null;
         }
-
-        return null;
     }
 
-    public static String getBasePathRest() {
+    private static String getDatabaseType() {
+        DocumentBuilder documentBuilder = null;
+
         try {
-            File connectionsXmlFile = new File("connections/connections.xml");
+            File connectionsXmlFile = new File(CONNECTIONS_XML_PATH);
             DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
+            documentBuilder = documentBuilderFactory.newDocumentBuilder();
             Document document = documentBuilder.parse(connectionsXmlFile);
 
             XPathFactory xPathFactory = XPathFactory.newInstance();
             XPath xpath = xPathFactory.newXPath();
 
-            String expression = "/CONFIG/API/UNDERTOW/BASE_PATH[@REST]";
-            Node basePathRestNode = (Node) xpath.evaluate(expression, document, XPathConstants.NODE);
+            // XPath's expression to get the value of the DATABASE_TYPE element
+            String expression = "/CONFIG/DATABASE/DATABASE_TYPE";
+            Element databaseTypeElement = (Element) xpath.evaluate(expression, document, XPathConstants.NODE);
 
-            if (basePathRestNode != null) {
-                return basePathRestNode.getAttributes().getNamedItem("REST").getNodeValue();
+            if (databaseTypeElement != null) {
+                return databaseTypeElement.getTextContent();
+            } else {
+                logger.warn("Database Type not found in the configuration.");
+                return null;
             }
-
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Error while getting database type from XML configuration.", e);
+            return null;
+        } finally {
+            if (documentBuilder != null) {
+                documentBuilder.reset();
+            }
         }
-
-        return null;
     }
 
     public static String getDatabaseName() {
@@ -124,26 +183,27 @@ public class ConnectionsXmlReader {
             XPath xpath = xPathFactory.newXPath();
 
             String expression = "/CONFIG/DATABASE/DATABASE_NAME";
-            Node databaseNameNode = (Node) xpath.evaluate(expression, document, XPathConstants.NODE);
+            Element databaseNameNode = (Element) xpath.evaluate(expression, document, XPathConstants.NODE);
 
             if (databaseNameNode != null) {
                 String databaseName;
                 databaseName = databaseNameNode.getTextContent();
-
                 /*Checking if  TYPE = "CLEARTEXT"*/
-                return getString(connectionsXmlFile, document, (Element) databaseNameNode, databaseName);
+                return getString(connectionsXmlFile, document, databaseNameNode, databaseName);
             } else {
-                System.out.println("⚠️ Database Name not found.");
+                System.err.println("Database Name not found.");
                 return null;
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            System.err.println("Error while getting database name from XML configuration" + e);
             return null;
         }
     }
 
-    private static String getString(File connectionsXmlFile, Document document, Element databaseNameNode, String databaseName) throws TransformerException {
-        Element databaseNameElement = databaseNameNode;
+    private static String getString(File connectionsXmlFile, Document document, Element databaseNameNode, String databaseName)
+            throws TransformerException {
+        Element databaseNameElement;
+        databaseNameElement = databaseNameNode;
         String typeAttribute = databaseNameElement.getAttribute("TYPE");
 
         if ("CLEARTEXT".equalsIgnoreCase(typeAttribute)) {
@@ -153,7 +213,6 @@ public class ConnectionsXmlReader {
             databaseNameElement.setAttribute("TYPE", "ENCRYPTED");
 
             /*Updating*/
-
             TransformerFactory transformerFactory = TransformerFactory.newInstance();
             Transformer transformer = transformerFactory.newTransformer();
             DOMSource source = new DOMSource(document);
@@ -162,18 +221,19 @@ public class ConnectionsXmlReader {
 
             return encryptedDatabaseName;
         } else if ("ENCRYPTED".equalsIgnoreCase(typeAttribute)) {
-            String decryptedDatabaseName = Encryption.decrypt(databaseName);
+            String decryptedDatabaseName;
+            decryptedDatabaseName = Encryption.decrypt(databaseName);
 
             return decryptedDatabaseName;
         } else {
-            System.out.println("The TYPE property is unknown.: " + typeAttribute);
+            System.err.println("The TYPE property is unknown.: {}\", typeAttribute)");
             return null;
         }
     }
 
     public static String getUsername() {
         try {
-            File connectionsXmlFile = new File("connections/connections.xml");
+            File connectionsXmlFile = new File(CONNECTIONS_XML_PATH);
             DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
             Document document = documentBuilder.parse(connectionsXmlFile);
@@ -189,20 +249,22 @@ public class ConnectionsXmlReader {
                 /*Check if  TYPE = "CLEARTEXT"*/
                 return getString(connectionsXmlFile, document, (Element) usernameNode, username);
             } else {
-                System.out.println("⚠\uFE0F Username not found.");
+                System.err.println("Username not found.");
                 return null;
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println("Failed to Read password from config" + e);
+
             return null;
         }
     }
 
     public static String getPassword() {
+        DocumentBuilder documentBuilder = null;
         try {
-            File connectionsXmlFile = new File("connections/connections.xml");
+            File connectionsXmlFile = new File(CONNECTIONS_XML_PATH);
             DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
+            documentBuilder = documentBuilderFactory.newDocumentBuilder();
             Document document = documentBuilder.parse(connectionsXmlFile);
 
             XPathFactory xPathFactory = XPathFactory.newInstance();
@@ -217,34 +279,87 @@ public class ConnectionsXmlReader {
                 /*Check if  TYPE = "CLEAR-TEXT"*/
                 return getString(connectionsXmlFile, document, (Element) passwordNode, password);
             } else {
-                System.out.println("Error ⚠\uFE0F No password was found.");
+                System.err.println("No password was found.");
                 return null;
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println("Failed to Read password from config");
             return null;
+        } finally {
+            assert documentBuilder != null;
+            documentBuilder.reset();
         }
     }
 
-    public static String getDatabaseURL() {
+    public static String getPortRest() {
         try {
-            File connectionsXmlFile = new File("connections/connections.xml");
-            DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
-            Document doc = dBuilder.parse(connectionsXmlFile);
-            doc.getDocumentElement().normalize();
+            File connectionsXmlFile = new File(CONNECTIONS_XML_PATH);
+            DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
+            Document document = documentBuilder.parse(connectionsXmlFile);
 
-            NodeList databaseURLNodeList = doc.getElementsByTagName("DATABASE_URL");
-            if (databaseURLNodeList.getLength() > 0) {
-                Element databaseURLElement = (Element) databaseURLNodeList.item(0);
-                return databaseURLElement.getTextContent();
-            } else {
-                throw new IllegalArgumentException("DATABASE_URL not found in the configuration.");
+            XPathFactory xPathFactory = XPathFactory.newInstance();
+            XPath xpath = xPathFactory.newXPath();
+
+            String expression = "/CONFIG/API/UNDERTOW/PORT[@REST]"; //predicates
+            Node portRestNode = (Node) xpath.evaluate(expression, document, XPathConstants.NODE);
+
+            if (portRestNode != null) {
+                return portRestNode.getAttributes().getNamedItem("REST").getNodeValue();
             }
+
         } catch (Exception e) {
-            e.printStackTrace();
-            return null;
+            System.err.println("Port Rest Not Found" + e);
         }
+
+        return null;
     }
 
+    public static String getHostRest() {
+        try {
+            File connectionsXmlFile = new File(CONNECTIONS_XML_PATH);
+            DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
+            Document document = documentBuilder.parse(connectionsXmlFile);
+
+            XPathFactory xPathFactory = XPathFactory.newInstance();
+            XPath xpath = xPathFactory.newXPath();
+
+            String expression = "/CONFIG/API/UNDERTOW/HOST[@REST]";
+            Node hostRestNode = (Node) xpath.evaluate(expression, document, XPathConstants.NODE);
+
+            if (hostRestNode != null) {
+                return hostRestNode.getAttributes().getNamedItem("REST").getNodeValue();
+            }
+
+        } catch (Exception e) {
+            System.err.println("Host Rest Not Found" + e);
+        }
+
+        return null;
+    }
+
+    public static String getBasePathRest() {
+        try {
+            File connectionsXmlFile = new File(CONNECTIONS_XML_PATH);
+            DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
+            Document document = documentBuilder.parse(connectionsXmlFile);
+
+            XPathFactory xPathFactory = XPathFactory.newInstance();
+            XPath xpath = xPathFactory.newXPath();
+
+            String expression = "/CONFIG/API/UNDERTOW/BASE_PATH[@REST]";
+            Node basePathRestNode = (Node) xpath.evaluate(expression, document, XPathConstants.NODE);
+
+            if (basePathRestNode != null) {
+                return basePathRestNode.getAttributes().getNamedItem("REST").getNodeValue();
+            }
+
+        } catch (Exception e) {
+            System.err.println("BasePathRest Rest Not Found" + e);
+        }
+
+        return null;
+    }
 }

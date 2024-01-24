@@ -10,8 +10,7 @@ import java.util.Map;
 
 public class QueryManager {
 
-    private ResultSetMetaData metaData;
-
+    public ResultSetMetaData metaData;
     public Connection establishConnection() {
         return ConnectionsXmlReader.getDbConnection();
     }
@@ -92,9 +91,8 @@ public class QueryManager {
         }
     }
 
-    /*
+
        public ResultSetMetaData getMetaData() {
         return this.metaData;
        }
-       */
 }
