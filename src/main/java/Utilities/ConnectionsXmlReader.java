@@ -22,6 +22,7 @@ import java.io.File;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.time.Duration;
+import java.util.Objects;
 
 public class ConnectionsXmlReader {
     private static final Logger logger = LogManager.getLogger(ConnectionsXmlReader.class);
@@ -34,51 +35,40 @@ public class ConnectionsXmlReader {
         String databaseName = getDatabaseName();
         String username = getUsername();
         String password = getPassword();
+        String host = getDatabaseHost();
+        String port = getDatabasePort();
+
+        System.out.println("Database Type: " + databaseType);
+        System.out.println("Database Name: " + databaseName);
+        System.out.println("Username: " + username);
 
         Connection con = null;
 
         try {
-            if (databaseType != null) {
-                con = getConnection(databaseType, databaseName, username, password);
-            }
-            System.out.println("Connected to : " + databaseName + " database");
-        } catch (SQLException e) {
-            System.err.println("Failed to establish a database connection.");
-        }
+            String connectionString;
+            String jdbcDriver;
 
-        return con;
-    }
+            connectionString = switch (Objects.requireNonNull(databaseType).toUpperCase()) {
+                case "MYSQL" -> {
+                    jdbcDriver = "com.mysql.cj.jdbc.Driver";
+                    yield "jdbc:mysql://" + host + ":" + port + "/" + databaseName;
+                }
+                case "POSTGRESQL" -> {
+                    jdbcDriver = "org.postgresql.Driver";
+                    yield "jdbc:postgresql://" + host + ":" + port + "/" + databaseName;
+                }
+                case "MICROSOFTSQL" -> {
+                    jdbcDriver = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
+                    yield "jdbc:sqlserver://" + host + ":" + port + "/" + databaseName;
+                }
+                default -> throw new IllegalArgumentException("Unsupported database type: " + databaseType);
+            };
 
-    private static Connection getConnection(String databaseType, String databaseName, String username, String password) throws SQLException {
-        String connectionString;
-        String jdbcDriver;
-        String host = getDatabaseHost();
-        String port = getDatabasePort();
-
-        connectionString = switch (databaseType.toUpperCase()) {
-            case "MYSQL" -> {
-                jdbcDriver = "com.mysql.cj.jdbc.Driver";
-                yield "jdbc:mysql://" + host + ":" + port + "/" + databaseName;
-            }
-            case "POSTGRESQL" -> {
-                jdbcDriver = "org.postgresql.Driver";
-                yield "jdbc:postgresql://" + host + ":" + port + "/" + databaseName;
-            }
-            case "MICROSOFTSQL" -> {
-                jdbcDriver = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
-                yield "jdbc:sqlserver://" + host + ":" + port + "/" + databaseName;
-            }
-            default -> throw new IllegalArgumentException("Unsupported database type: " + databaseType);
-        };
-
-        try {
+            // Load JDBC driver
             Class.forName(jdbcDriver);
-        } catch (ClassNotFoundException e) {
-            throw new SQLException("Failed to load JDBC driver for database type: " + databaseType, e);
-        }
 
-        if (dataSource == null) {
-            dataSource = new BasicDataSource();
+            // Initialize the dataSource object
+            BasicDataSource dataSource = new BasicDataSource();
             dataSource.setUrl(connectionString);
             dataSource.setUsername(username);
             dataSource.setPassword(password);
@@ -86,8 +76,14 @@ public class ConnectionsXmlReader {
             dataSource.setMaxIdle(10);
             dataSource.setMinIdle(5);
             dataSource.setMaxWait(Duration.ofSeconds(10));
+
+            con = dataSource.getConnection();
+            System.out.println("Connected to : " + databaseName + " database");
+        } catch (ClassNotFoundException | SQLException e) {
+            System.err.println("Failed to establish a database connection.");
         }
-        return dataSource.getConnection();
+
+        return con;
     }
 
     private static String getDatabaseHost() {

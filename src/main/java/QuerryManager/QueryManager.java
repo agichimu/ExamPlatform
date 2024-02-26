@@ -46,13 +46,9 @@ public class QueryManager {
             }
         }
     }
-
-
-
     public int insert(String sqlQuery, LinkedHashMap<String, Object> values) throws ClassNotFoundException, SQLException {
         try (Connection connection = establishConnection();
              PreparedStatement statement = connection.prepareStatement(sqlQuery)) {
-
             for (Map.Entry<String, Object> entry : values.entrySet()) {
                 String key = entry.getKey();
                 Object value = entry.getValue();
