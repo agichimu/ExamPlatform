@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?><CONFIG>
     <API xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="">
     <UNDERTOW DISPLAY_ENDPOINTS="YES" IO_THREAD_POOL="20" WORKER_THREAD_POOL="40">
-        <PORT REST="8081"/>
+        <PORT REST="8080"/>
         <HOST REST="localhost"/>
         <BASE_PATH PORTAL="" REST="/exam-platform/api"/>
     </UNDERTOW>
     </API>
 
     <DATABASE>
-        <DATABASE_TYPE>POSTGRESQL</DATABASE_TYPE>
+        <DATABASE_TYPE>MYSQL</DATABASE_TYPE>
         <HOST>Localhost</HOST>
-        <PORT>5432</PORT>
-        <DATABASE_NAME TYPE="ENCRYPTED">hDoYNq5ZsVJa/o39tsAsOBK10qUSeNAT+SPpUOBsMME=</DATABASE_NAME>
-        <USERNAME TYPE="ENCRYPTED">RGfbYZcGHTNMxqVcbVvU/g==</USERNAME>
-        <PASSWORD TYPE="ENCRYPTED">811K5xwRHsWWOJGlxlrACg==</PASSWORD>
+        <PORT>3306</PORT>
+        <DATABASE_NAME TYPE="ENCRYPTED">jhMA8r9MSTIJlOzZ3yk5ZOSwwSudC5hdQg/DwZOJqEk=</DATABASE_NAME>
+        <USERNAME TYPE="ENCRYPTED">XUkRkCMWytiCRkwfonjQSA==</USERNAME>
+        <PASSWORD TYPE="ENCRYPTED">lu/jl4MR9OQ70YNWUbdE0Q==</PASSWORD>
     </DATABASE>
 </CONFIG>
