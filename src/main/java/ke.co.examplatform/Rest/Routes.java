@@ -1,6 +1,5 @@
 package ke.co.examplatform.Rest;
 
-import examinations.Questions.CreateQuestions;
 import io.undertow.Handlers;
 import io.undertow.server.RoutingHandler;
 import io.undertow.server.handlers.BlockingHandler;
@@ -43,6 +42,7 @@ import ke.co.examplatform.examinations.Choices.UpdateChoices;
 import ke.co.examplatform.examinations.CreateExaminations;
 import ke.co.examplatform.examinations.DeleteExaminations;
 import ke.co.examplatform.examinations.GetExamination;
+import ke.co.examplatform.examinations.Questions.CreateQuestions;
 import ke.co.examplatform.examinations.Questions.DeleteQuestions;
 import ke.co.examplatform.examinations.Questions.GetQuestions;
 import ke.co.examplatform.examinations.Questions.UpdateQuestions;

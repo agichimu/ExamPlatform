@@ -1,4 +1,4 @@
-package examinations.Questions;
+package ke.co.examplatform.examinations.Questions;
 
 import com.google.gson.Gson;
 import io.undertow.server.HttpHandler;
