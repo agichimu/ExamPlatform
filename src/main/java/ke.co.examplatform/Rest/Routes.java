@@ -17,42 +17,25 @@ import ke.co.examplatform.SchoolManagement.Subjects.CreateSubjects;
 import ke.co.examplatform.SchoolManagement.Subjects.DeleteSubjects;
 import ke.co.examplatform.SchoolManagement.Subjects.GetSubjects;
 import ke.co.examplatform.SchoolManagement.Subjects.UpdateSubjects;
-import ke.co.examplatform.Users.Guardians.CreateGuardian;
-import ke.co.examplatform.Users.Guardians.DeleteGuardian;
-import ke.co.examplatform.Users.Guardians.GetGuardian;
-import ke.co.examplatform.Users.Guardians.GetGuardians;
-import ke.co.examplatform.Users.Guardians.UpdateGuardians;
+import ke.co.examplatform.Users.Guardians.*;
 import ke.co.examplatform.Users.Guardians.guardianroles.CreateGuardianRoles;
 import ke.co.examplatform.Users.Guardians.guardianroles.DeleteGuardianRoles;
 import ke.co.examplatform.Users.Guardians.guardianroles.GetGuardianRoles;
 import ke.co.examplatform.Users.Guardians.guardianroles.UpdateGuardianRoles;
-import ke.co.examplatform.Users.Pupils.CreatePupils;
-import ke.co.examplatform.Users.Pupils.DeletePupils;
-import ke.co.examplatform.Users.Pupils.GetPupil;
-import ke.co.examplatform.Users.Pupils.GetPupils;
-import ke.co.examplatform.Users.Pupils.UpdatePupils;
+import ke.co.examplatform.Users.Pupils.*;
 import ke.co.examplatform.Users.Teachers.CreateTeachers;
 import ke.co.examplatform.Users.Teachers.DeleteTeachers;
 import ke.co.examplatform.Users.Teachers.GetTeachers;
 import ke.co.examplatform.Users.Teachers.UpdateTeachers;
-import ke.co.examplatform.examinations.Choices.CreateChoices;
-import ke.co.examplatform.examinations.Choices.DeleteChoices;
-import ke.co.examplatform.examinations.Choices.GetChoices;
-import ke.co.examplatform.examinations.Choices.UpdateChoices;
-import ke.co.examplatform.examinations.CreateExaminations;
-import ke.co.examplatform.examinations.DeleteExaminations;
-import ke.co.examplatform.examinations.GetExamination;
-import ke.co.examplatform.examinations.Questions.CreateQuestions;
-import ke.co.examplatform.examinations.Questions.DeleteQuestions;
-import ke.co.examplatform.examinations.Questions.GetQuestions;
-import ke.co.examplatform.examinations.Questions.UpdateQuestions;
-import ke.co.examplatform.examinations.UpdateExaminations;
+import ke.co.examplatform.examinations.Choices.*;
+import ke.co.examplatform.examinations.*;
+import ke.co.examplatform.examinations.Questions.*;
 
 public class Routes {
     public static RoutingHandler examinations() {
         QueryManager queryManager = new QueryManager();
         return Handlers.routing()
-                //.get("", new Dispatcher(new GetExaminations()))
+                .get("", new Dispatcher(new GetExaminations()))
                 .get("/{examinationId}", new Dispatcher(new GetExamination(queryManager)))
                 .post("", new BlockingHandler(new CreateExaminations(queryManager)))
                 .add(Methods.PATCH, "/{examinationId}", new BlockingHandler(new UpdateExaminations(queryManager)))
@@ -114,7 +97,7 @@ public class Routes {
         QueryManager queryManager = new QueryManager();
         return Handlers.routing()
                 .get("", new Dispatcher(new GetQuestions()))
-                //.get("/{questionId}", new Dispatcher(new GetQuestion()))
+                .get("/{questionId}", new Dispatcher(new GetQuestion(queryManager)))
                 .post("", new BlockingHandler(new CreateQuestions(queryManager)))
                 .add(Methods.PATCH, "/{questionId}", new BlockingHandler(new UpdateQuestions(queryManager)))
                 .delete("/{questionId}", new Dispatcher(new DeleteQuestions(queryManager)))
@@ -126,7 +109,7 @@ public class Routes {
         QueryManager queryManager = new QueryManager();
         return Handlers.routing()
                 .get("", new Dispatcher(new GetChoices()))
-               // .get("/{choiceId}", new Dispatcher(new GetChoice()))
+               .get("/{choiceId}", new Dispatcher(new GetChoice(queryManager)))
                 .post("", new BlockingHandler(new CreateChoices(queryManager)))
                 .add(Methods.PATCH, "/{choiceId}", new BlockingHandler(new UpdateChoices(queryManager)))
                 .delete("/{choiceId}", new Dispatcher(new DeleteChoices(queryManager)))

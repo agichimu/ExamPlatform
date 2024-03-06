@@ -31,31 +31,30 @@ public class CreatePupils implements HttpHandler {
 
         try {
             String insertQuery = "INSERT INTO pupils_details " +
-                    "(first_name, second_name, surname, gender, admission_no, class_id, admission_date) " +
-                    "VALUES (?, ?, ?, ?, ?, ?, ?)";
+                    "(first_name, last_name, date_of_birth, gender_id, class_id, date_created, date_modified) " +
+                    "VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)";
+
 
             LinkedHashMap<String, Object> values = new LinkedHashMap<>();
             values.put("1", requestBodyMap.get("first_name"));
-            values.put("2", requestBodyMap.get("second_name"));
-            values.put("3", requestBodyMap.get("surname"));
-            values.put("4", requestBodyMap.get("gender"));
-            values.put("5", requestBodyMap.get("admission_no"));
-            values.put("6", requestBodyMap.get("class_id"));
-            values.put("7", requestBodyMap.get("admission_date"));
+            values.put("2", requestBodyMap.get("last_name"));
+            values.put("3", requestBodyMap.get("date_of_birth"));
+            values.put("4", requestBodyMap.get("gender_id"));
+            values.put("5", requestBodyMap.get("class_id"));
 
             int rowsAffected = queryManager.insert(insertQuery, values);
 
             if (rowsAffected > 0) {
                 pupilData.put("status", "Pupil created successfully");
-                exchange.setStatusCode(201);
+                exchange.setStatusCode(200);
             } else {
                 pupilData.put("error", "Failed to create pupil");
-                exchange.setStatusCode(400);
+                exchange.setStatusCode(500);
             }
         } catch (SQLException | ClassNotFoundException e) {
             pupilData.put("error", "Failed to create pupil");
             pupilData.put("details", e.getMessage());
-            exchange.setStatusCode(400);
+            exchange.setStatusCode(500);
         }
 
         exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "application/json");
@@ -63,7 +62,7 @@ public class CreatePupils implements HttpHandler {
     }
 
     private void error(HttpServerExchange exchange, IOException error) {
-        exchange.setStatusCode(400);
+        exchange.setStatusCode(500);
         exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "application/json");
         exchange.getResponseSender().send("Error in request");
     }

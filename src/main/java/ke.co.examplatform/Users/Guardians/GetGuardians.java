@@ -37,14 +37,11 @@ public class GetGuardians implements HttpHandler {
                             Map<String, Object> guardianMap = new HashMap<>();
                             guardianMap.put("guardian_id", resultSet.getLong("guardian_id"));
                             guardianMap.put("first_name", resultSet.getString("first_name"));
-                            guardianMap.put("second_name", resultSet.getString("second_name"));
                             guardianMap.put("surname", resultSet.getString("surname"));
                             guardianMap.put("phone_number", resultSet.getString("phone_number"));
-                            guardianMap.put("email_address", resultSet.getString("email_address"));
-                            guardianMap.put("gender", resultSet.getString("gender"));
+                            guardianMap.put("gender_id", resultSet.getInt("gender_id")); // Assuming gender_id is an integer
                             guardianMap.put("date_created", resultSet.getString("date_created"));
                             guardianMap.put("date_modified", resultSet.getString("date_modified"));
-
                             guardianList.add(guardianMap);
                         }
                     }

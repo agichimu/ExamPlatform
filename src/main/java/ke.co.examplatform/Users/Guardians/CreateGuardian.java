@@ -32,16 +32,15 @@ public class CreateGuardian implements HttpHandler {
 
         try {
             String insertQuery = "INSERT INTO guardian_details " +
-                    "(first_name, second_name, surname, gender, phone_number, email_address) " +
-                    "VALUES (?, ?, ?, ?, ?, ?)";
+                    "(first_name, gender_id, surname, phone_number, role_id) " +
+                    "VALUES (?, ?, ?, ?, ?)";
 
             LinkedHashMap<String, Object> values = new LinkedHashMap<>();
             values.put("1", requestBodyMap.get("first_name"));
-            values.put("2", requestBodyMap.get("second_name"));
+            values.put("2", requestBodyMap.get("gender_id"));
             values.put("3", requestBodyMap.get("surname"));
-            values.put("4", requestBodyMap.get("gender"));
-            values.put("5", requestBodyMap.get("phone_number"));
-            values.put("6", requestBodyMap.get("email_address"));
+            values.put("4", requestBodyMap.get("phone_number"));
+            values.put("5", requestBodyMap.get("role_id"));
 
             int rowsAffected = queryManager.insert(insertQuery, values);
 

@@ -38,14 +38,12 @@ public class GetPupils implements HttpHandler {
                             Map<String, Object> pupilMap = new HashMap<>();
                             pupilMap.put("pupil_id", resultSet.getLong("pupil_id"));
                             pupilMap.put("first_name", resultSet.getString("first_name"));
-                            pupilMap.put("second_name", resultSet.getString("second_name"));
-                            pupilMap.put("surname", resultSet.getString("surname"));
-                            pupilMap.put("gender", resultSet.getString("gender"));
-                            pupilMap.put("admission_no", resultSet.getString("admission_no"));
+                            pupilMap.put("last_name", resultSet.getString("last_name"));
+                            pupilMap.put("date_of_birth", resultSet.getString("date_of_birth"));
+                            pupilMap.put("gender_id", resultSet.getInt("gender_id"));
                             pupilMap.put("class_id", resultSet.getLong("class_id"));
                             pupilMap.put("date_created", resultSet.getString("date_created"));
                             pupilMap.put("date_modified", resultSet.getString("date_modified"));
-                            pupilMap.put("admission_date", resultSet.getString("admission_date"));
 
                             pupilList.add(pupilMap);
                         }

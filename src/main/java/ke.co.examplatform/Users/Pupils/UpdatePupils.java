@@ -35,20 +35,19 @@ public class UpdatePupils implements HttpHandler {
 
         try {
             String updateQuery = "UPDATE pupils_details " +
-                    "SET first_name = ?, second_name = ?, surname = ?, gender = ?, " +
-                    "admission_no = ?, class_id = ?, admission_date = ? " +
+                    "SET first_name = ?, last_name = ?, date_of_birth = ?, gender_id = ?, " +
+                    "class_id = ?, date_modified = CURRENT_TIMESTAMP " +
                     "WHERE pupil_id = ?";
 
             LinkedHashMap<String, Object> requestBodyMap = gson.fromJson(RestUtils.getRequestBody(exchange), LinkedHashMap.class);
 
             LinkedHashMap<String, Object> values = new LinkedHashMap<>();
             values.put("1", requestBodyMap.get("first_name"));
-            values.put("2", requestBodyMap.get("second_name"));
-            values.put("3", requestBodyMap.get("surname"));
+            values.put("2", requestBodyMap.get("last_name"));
+            values.put("3", requestBodyMap.get("date_of_birth"));
             values.put("4", requestBodyMap.get("gender"));
-            values.put("5", requestBodyMap.get("admission_no"));
+            values.put("5", requestBodyMap.get("gender_id"));
             values.put("6", requestBodyMap.get("class_id"));
-            values.put("7", requestBodyMap.get("admission_date"));
             values.put("8", pupilId);
 
             int rowsAffected = queryManager.update(updateQuery, values);

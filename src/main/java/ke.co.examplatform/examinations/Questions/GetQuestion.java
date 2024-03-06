@@ -1,4 +1,4 @@
-package ke.co.examplatform.Users.Pupils;
+package ke.co.examplatform.examinations.Questions;
 
 import com.google.gson.Gson;
 import io.undertow.server.HttpHandler;
@@ -8,13 +8,16 @@ import ke.co.examplatform.QuerryManager.QueryManager;
 import ke.co.examplatform.Rest.RestUtils;
 
 import java.sql.SQLException;
-import java.util.*;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
-public class GetPupil implements HttpHandler {
+public class GetQuestion implements HttpHandler {
 
     private final QueryManager queryManager;
 
-    public GetPupil(QueryManager queryManager) {
+    public GetQuestion(QueryManager queryManager) {
         this.queryManager = queryManager;
     }
 
@@ -26,47 +29,45 @@ public class GetPupil implements HttpHandler {
         }
 
         Gson gson = new Gson();
-        String pupilId = RestUtils.getPathVar(exchange, "pupilId");
+        String questionId = RestUtils.getPathVar(exchange, "questionId");
 
-        if (pupilId != null) {
+        if (questionId != null) {
             try {
-                Map<String, Object> pupilMap;
-                pupilMap = Collections.unmodifiableMap(getPupil(pupilId));
+                Map<String, Object> questionMap;
+                questionMap = getQuestion(questionId);
                 exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "application/json");
-                exchange.getResponseSender().send(gson.toJson(pupilMap));
+                exchange.getResponseSender().send(gson.toJson(questionMap));
             } catch (SQLException e) {
                 e.printStackTrace();
-                String errorResponse = "Failed to fetch pupil";
+                String errorResponse = "Failed to fetch question";
                 exchange.setStatusCode(500);
                 exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "application/json");
                 exchange.getResponseSender().send(errorResponse);
             }
         } else {
-            String errorResponse = "Pupil ID not provided";
+            String errorResponse = "Question ID not provided";
             exchange.setStatusCode(400);
             exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "application/json");
             exchange.getResponseSender().send(errorResponse);
         }
     }
 
-    private Map<String, Object> getPupil(String pupilId) throws SQLException {
-        Map<String, Object> pupilMap = new HashMap<>();
+    private Map<String, Object> getQuestion(String questionId) throws SQLException {
+        Map<String, Object> questionMap = new HashMap<>();
 
-        String selectQuery = "SELECT * FROM pupils_details WHERE pupil_id = ?";
+        String selectQuery = "SELECT * FROM questions_details WHERE question_id = ?";
 
         Map<String, Object> paramMap = new HashMap<>();
-        paramMap.put("pupilId", pupilId);
+        paramMap.put("questionId", questionId);
 
         try {
             List<LinkedHashMap<String, Object>> results = queryManager.select(selectQuery, paramMap);
-
             if (!results.isEmpty()) {
-                pupilMap = results.get(0);
+                questionMap = results.get(0);
             }
         } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
-
-        return pupilMap;
+        return questionMap;
     }
 }

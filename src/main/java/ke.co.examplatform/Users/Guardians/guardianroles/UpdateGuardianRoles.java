@@ -34,13 +34,13 @@ public class UpdateGuardianRoles implements HttpHandler {
         Gson gson = new Gson();
 
         try {
-            String updateQuery = "UPDATE guardian_roles SET guardian_role = ? " +
+            String updateQuery = "UPDATE guardian_roles SET role_name = ? " +
                     "WHERE role_id = ?";
 
             LinkedHashMap<String, Object> requestBodyMap = gson.fromJson(RestUtils.getRequestBody(exchange), LinkedHashMap.class);
 
             LinkedHashMap<String, Object> values = new LinkedHashMap<>();
-            values.put("1", requestBodyMap.get("guardian_role"));
+            values.put("1", requestBodyMap.get("role_name"));
             values.put("2", roleId);
 
             int rowsAffected = queryManager.update(updateQuery, values);

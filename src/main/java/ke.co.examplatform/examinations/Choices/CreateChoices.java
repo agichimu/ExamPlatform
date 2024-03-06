@@ -31,14 +31,13 @@ public class CreateChoices implements HttpHandler {
 
         try {
             String insertQuery = "INSERT INTO choices_details " +
-                    "(choice_label, choice_content, is_right, question_id) " +
-                    "VALUES (?, ?, ?, ?)";
+                    "(choice_text, is_correct, question_id) " +
+                    "VALUES (?, ?, ?)";
 
             LinkedHashMap<String, Object> values = new LinkedHashMap<>();
-            values.put("1", requestBodyMap.get("choice_label"));
-            values.put("2", requestBodyMap.get("choice_content"));
-            values.put("3", requestBodyMap.get("is_right"));
-            values.put("4", requestBodyMap.get("question_id"));
+            values.put("1", requestBodyMap.get("choice_text"));
+            values.put("2", requestBodyMap.get("is_correct"));
+            values.put("3", requestBodyMap.get("question_id"));
 
             int rowsAffected = queryManager.insert(insertQuery, values);
 

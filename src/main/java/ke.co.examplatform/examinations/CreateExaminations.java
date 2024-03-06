@@ -31,16 +31,16 @@ public class CreateExaminations implements HttpHandler {
 
         try {
             String insertQuery = "INSERT INTO examination_details " +
-                    "(instructions, teacher_id, examination_name, subject_id, question_id, examination_time) " +
-                    "VALUES (?, ?, ?, ?, ?, ?)";
+                    "(instructions, teacher_id, examination_name, subject_id,examination_time) " +
+                    "VALUES (?, ?, ?, ?, ?)";
+
 
             LinkedHashMap<String, Object> values = new LinkedHashMap<>();
             values.put("1", requestBodyMap.get("instructions"));
             values.put("2", requestBodyMap.get("teacher_id"));
             values.put("3", requestBodyMap.get("examination_name"));
             values.put("4", requestBodyMap.get("subject_id"));
-            values.put("5", requestBodyMap.get("question_id"));
-            values.put("6", requestBodyMap.get("examination_time"));
+            values.put("5", requestBodyMap.get("examination_time"));
 
             int rowsAffected = queryManager.insert(insertQuery, values);
 

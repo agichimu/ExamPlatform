@@ -33,20 +33,18 @@ public class UpdateGuardians implements HttpHandler {
         Gson gson = new Gson();
 
         try {
-            String updateQuery = "UPDATE guardian_details SET first_name = ?, second_name = ?, " +
-                    "surname = ?, phone_number = ?, email_address = ?, gender = ? " +
-                    "WHERE guardian_id = ?";
+            String updateQuery = "UPDATE guardian_details SET first_name = ?, surname = ?, phone_number = ?, " +
+                    "gender_id = ? WHERE guardian_id = ?";
 
             LinkedHashMap<String, Object> requestBodyMap = gson.fromJson(RestUtils.getRequestBody(exchange), LinkedHashMap.class);
 
             LinkedHashMap<String, Object> values = new LinkedHashMap<>();
             values.put("1", requestBodyMap.get("first_name"));
-            values.put("2", requestBodyMap.get("second_name"));
-            values.put("3", requestBodyMap.get("surname"));
-            values.put("4", requestBodyMap.get("phone_number"));
-            values.put("5", requestBodyMap.get("email_address"));
-            values.put("6", requestBodyMap.get("gender"));
-            values.put("7", guardianId);
+            values.put("2", requestBodyMap.get("surname"));
+            values.put("3", requestBodyMap.get("phone_number"));
+            values.put("4", requestBodyMap.get("gender_id"));
+            values.put("5", guardianId);
+
 
             int rowsAffected = queryManager.update(updateQuery, values);
 

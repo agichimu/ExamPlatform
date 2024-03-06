@@ -2,8 +2,6 @@ package ke.co.examplatform.Utilities;
 
 import ke.co.examplatform.encryption.Encryption;
 import org.apache.commons.dbcp2.BasicDataSource;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -25,8 +23,6 @@ import java.time.Duration;
 import java.util.Objects;
 
 public class ConnectionsXmlReader {
-    private static final Logger logger = LogManager.getLogger(ConnectionsXmlReader.class);
-
     private static final String CONNECTIONS_XML_PATH = "connections/connections.xml";
     private static BasicDataSource dataSource;
 
@@ -131,7 +127,7 @@ public class ConnectionsXmlReader {
                 return null;
             }
         } catch (Exception e) {
-            logger.error("Error while getting database port from XML configuration.", e);
+            System.out.println("Error while getting database port from XML configuration.");
             return null;
         }
     }
@@ -155,11 +151,11 @@ public class ConnectionsXmlReader {
             if (databaseTypeElement != null) {
                 return databaseTypeElement.getTextContent();
             } else {
-                logger.warn("Database Type not found in the configuration.");
+                System.out.println("Database Type not found in the configuration.");
                 return null;
             }
         } catch (Exception e) {
-            logger.error("Error while getting database type from XML configuration.", e);
+            System.out.println("Error while getting database type from XML configuration.");
             return null;
         } finally {
             if (documentBuilder != null) {

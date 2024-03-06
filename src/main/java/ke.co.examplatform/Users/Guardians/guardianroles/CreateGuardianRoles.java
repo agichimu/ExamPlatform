@@ -31,16 +31,16 @@ public class CreateGuardianRoles implements HttpHandler {
 
         try {
             String insertQuery = "INSERT INTO guardian_roles " +
-                    "(guardian_role) " +
+                    "(role_name) " +
                     "VALUES (?)";
 
             LinkedHashMap<String, Object> values = new LinkedHashMap<>();
-            values.put("1", requestBodyMap.get("guardian_role"));
+            values.put("1", requestBodyMap.get("role_name"));
 
             int rowsAffected = queryManager.insert(insertQuery, values);
 
             if (rowsAffected > 0) {
-                roleData.put("status", "Guardian role created successfully");
+                roleData.put("status", "role created successfully");
                 exchange.setStatusCode(201);
             } else {
                 roleData.put("error", "Failed to create guardian role");

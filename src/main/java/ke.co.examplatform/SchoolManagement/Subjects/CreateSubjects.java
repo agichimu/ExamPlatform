@@ -31,14 +31,11 @@ public class CreateSubjects implements HttpHandler {
 
         try {
             String insertQuery = "INSERT INTO subject_details " +
-                    "(subject_name, subject_code, department_id, date_created, date_modified) " +
-                    "VALUES (?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)";
+                    "(subject_name,date_created, date_modified) " +
+                    "VALUES (?,CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)";
 
             LinkedHashMap<String, Object> values = new LinkedHashMap<>();
             values.put("1", requestBodyMap.get("subject_name"));
-            values.put("2", requestBodyMap.get("subject_code"));
-            values.put("3", requestBodyMap.get("department_id"));
-
             int rowsAffected = queryManager.insert(insertQuery, values);
 
             if (rowsAffected > 0) {

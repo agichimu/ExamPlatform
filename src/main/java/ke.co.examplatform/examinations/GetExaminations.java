@@ -1,4 +1,4 @@
-package ke.co.examplatform.examinations.Choices;
+package ke.co.examplatform.examinations;
 
 import com.google.gson.Gson;
 import io.undertow.server.HttpHandler;
@@ -15,7 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class GetChoices implements HttpHandler {
+public class GetExaminations implements HttpHandler {
 
     @Override
     public void handleRequest(HttpServerExchange exchange) {
@@ -25,34 +25,35 @@ public class GetChoices implements HttpHandler {
         }
 
         Gson gson = new Gson();
-        List<Map<String, Object>> choicesList = new ArrayList<>();
+        List<Map<String, Object>> examinationList = new ArrayList<>();
 
         try {
             try (Connection connection = ConnectionsXmlReader.getDbConnection()) {
-                String selectQuery = "SELECT * FROM choices_details";
+                String selectQuery = "SELECT * FROM examination_details";
 
                 try (PreparedStatement preparedStatement = connection.prepareStatement(selectQuery)) {
                     try (ResultSet resultSet = preparedStatement.executeQuery()) {
                         while (resultSet.next()) {
-                            Map<String, Object> choiceMap = new HashMap<>();
-                            choiceMap.put("choice_id", resultSet.getLong("choice_id"));
-                            choiceMap.put("choice_text", resultSet.getString("choice_text"));
-                            choiceMap.put("is_correct", resultSet.getString("is_correct"));
-                            choiceMap.put("question_id", resultSet.getLong("question_id"));
-                            choiceMap.put("date_created", resultSet.getString("date_created"));
-                            choiceMap.put("date_modified", resultSet.getString("date_modified"));
-
-                            choicesList.add(choiceMap);
+                            Map<String, Object> examinationMap = new HashMap<>();
+                            examinationMap.put("examination_id", resultSet.getLong("examination_id"));
+                            examinationMap.put("examination_name", resultSet.getString("examination_name"));
+                            examinationMap.put("instructions", resultSet.getString("instructions"));
+                            examinationMap.put("teacher_id", resultSet.getLong("teacher_id"));
+                            examinationMap.put("subject_id", resultSet.getInt("subject_id"));
+                            examinationMap.put("examination_time", resultSet.getString("examination_time"));
+                            examinationMap.put("date_created", resultSet.getString("date_created"));
+                            examinationMap.put("date_modified", resultSet.getString("date_modified"));
+                            examinationList.add(examinationMap);
                         }
                     }
                 }
             }
 
             exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "application/json");
-            exchange.getResponseSender().send(gson.toJson(choicesList));
+            exchange.getResponseSender().send(gson.toJson(examinationList));
         } catch (SQLException e) {
             e.printStackTrace();
-            String errorResponse = "Failed to fetch choices data from the database";
+            String errorResponse = "Failed to fetch examination data from the database";
             exchange.setStatusCode(500);
             exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "application/json");
             exchange.getResponseSender().send(errorResponse);

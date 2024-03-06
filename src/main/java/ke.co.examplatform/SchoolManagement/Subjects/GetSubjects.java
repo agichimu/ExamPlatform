@@ -38,8 +38,6 @@ public class GetSubjects implements HttpHandler {
                 Map<String, Object> subjectMap = new HashMap<>();
                 subjectMap.put("subject_id", resultSet.getLong("subject_id"));
                 subjectMap.put("subject_name", resultSet.getString("subject_name"));
-                subjectMap.put("subject_code", resultSet.getInt("subject_code"));
-                subjectMap.put("department_id", resultSet.getLong("department_id"));
                 subjectMap.put("date_created", resultSet.getTimestamp("date_created"));
                 subjectMap.put("date_modified", resultSet.getTimestamp("date_modified"));
 

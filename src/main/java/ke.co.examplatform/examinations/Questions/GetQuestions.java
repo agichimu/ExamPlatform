@@ -36,12 +36,8 @@ public class GetQuestions implements HttpHandler {
                         while (resultSet.next()) {
                             Map<String, Object> questionMap = new HashMap<>();
                             questionMap.put("question_id", resultSet.getLong("question_id"));
-                            questionMap.put("question_layout", resultSet.getInt("question_layout"));
-                            questionMap.put("question_text", resultSet.getString("question_text"));
-                            questionMap.put("question_total_marks", resultSet.getInt("question_total_marks"));
-                            questionMap.put("question_time", resultSet.getString("question_time"));
                             questionMap.put("examination_id", resultSet.getLong("examination_id"));
-                            questionMap.put("question_type", resultSet.getString("question_type"));
+                            questionMap.put("question_text", resultSet.getString("question_text"));
                             questionMap.put("date_created", resultSet.getString("date_created"));
                             questionMap.put("date_modified", resultSet.getString("date_modified"));
 

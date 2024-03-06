@@ -37,7 +37,7 @@ public class GetGuardianRoles implements HttpHandler {
             while (resultSet.next()) {
                 Map<String, Object> roleMap = new HashMap<>();
                 roleMap.put("role_id", resultSet.getLong("role_id"));
-                roleMap.put("guardian_role", resultSet.getString("guardian_role"));
+                roleMap.put("role_name", resultSet.getString("role_name"));
                 roleMap.put("date_created", resultSet.getTimestamp("date_created"));
                 roleMap.put("date_modified", resultSet.getTimestamp("date_modified"));
 

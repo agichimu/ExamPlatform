@@ -34,25 +34,23 @@ public class UpdateTeachers implements HttpHandler {
         Gson gson = new Gson();
 
         try {
-            String updateQuery = "UPDATE teachers_details SET first_name = ?, second_name = ?, " +
-                    "surname = ?, gender = ?, phone_number = ?, email_address = ?, tsc_number = ?, " +
-                    "role = ?, date_of_birth = ?, department_id = ? WHERE teacher_id = ?";
+            String updateQuery = "UPDATE teachers_details SET first_name = ?, last_name = ?, " +
+                    "phone_number = ?, gender_id = ?, email_id = ?, tsc_number = ?, " +
+                    "education_level = ?, birthdate = ?, department_id = ? WHERE teacher_id = ?";
 
             LinkedHashMap<String, Object> requestBodyMap = gson.fromJson(RestUtils.getRequestBody(exchange), LinkedHashMap.class);
 
             LinkedHashMap<String, Object> values = new LinkedHashMap<>();
             values.put("1", requestBodyMap.get("first_name"));
-            values.put("2", requestBodyMap.get("second_name"));
-            values.put("3", requestBodyMap.get("surname"));
-            values.put("4", requestBodyMap.get("gender"));
-            values.put("5", requestBodyMap.get("phone_number"));
-            values.put("6", requestBodyMap.get("email_address"));
-            values.put("7", requestBodyMap.get("tsc_number"));
-            values.put("8", requestBodyMap.get("role"));
-            values.put("9", requestBodyMap.get("date_of_birth"));
-            values.put("10", requestBodyMap.get("department_id"));
-            values.put("11", teacherId);
-
+            values.put("2", requestBodyMap.get("last_name"));
+            values.put("3", requestBodyMap.get("phone_number"));
+            values.put("4", requestBodyMap.get("gender_id"));
+            values.put("5", requestBodyMap.get("email_id"));
+            values.put("6", requestBodyMap.get("tsc_number"));
+            values.put("7", requestBodyMap.get("education_level"));
+            values.put("8", requestBodyMap.get("birthdate"));
+            values.put("9", requestBodyMap.get("department_id"));
+            values.put("10", teacherId);
             int rowsAffected = queryManager.update(updateQuery, values);
 
             if (rowsAffected > 0) {

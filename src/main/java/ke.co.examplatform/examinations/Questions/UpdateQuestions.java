@@ -34,20 +34,16 @@ public class UpdateQuestions implements HttpHandler {
         Gson gson = new Gson();
 
         try {
-            String updateQuery = "UPDATE questions_details SET question_layout = ?, question_text = ?, " +
-                    "question_total_marks = ?, question_time = ?, examination_id = ?, question_type = ? " +
+            String updateQuery = "UPDATE questions_details SET question_text = ?, " +
+                    "examination_id = ? " +
                     "WHERE question_id = ?";
 
             LinkedHashMap<String, Object> requestBodyMap = gson.fromJson(RestUtils.getRequestBody(exchange), LinkedHashMap.class);
 
             LinkedHashMap<String, Object> values = new LinkedHashMap<>();
-            values.put("1", requestBodyMap.get("question_layout"));
-            values.put("2", requestBodyMap.get("question_text"));
-            values.put("3", requestBodyMap.get("question_total_marks"));
-            values.put("4", requestBodyMap.get("question_time"));
-            values.put("5", requestBodyMap.get("examination_id"));
-            values.put("6", requestBodyMap.get("question_type"));
-            values.put("7", questionId);
+            values.put("1", requestBodyMap.get("question_text"));
+            values.put("2", requestBodyMap.get("examination_id"));
+            values.put("3", questionId);
 
             int rowsAffected = queryManager.update(updateQuery, values);
 

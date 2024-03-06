@@ -32,16 +32,12 @@ public class CreateQuestions implements HttpHandler {
 
         try {
             String insertQuery = "INSERT INTO questions_details " +
-                    "(question_layout, question_text, question_total_marks, question_time, examination_id, question_type) " +
-                    "VALUES (?, ?, ?, ?, ?, ?)";
+                    "(examination_id, question_text) " +
+                    "VALUES (?, ?)";
 
             LinkedHashMap<String, Object> values = new LinkedHashMap<>();
-            values.put("1", requestBodyMap.get("question_layout"));
+            values.put("1", requestBodyMap.get("examination_id"));
             values.put("2", requestBodyMap.get("question_text"));
-            values.put("3", requestBodyMap.get("question_total_marks"));
-            values.put("4", requestBodyMap.get("question_time"));
-            values.put("5", requestBodyMap.get("examination_id"));
-            values.put("6", requestBodyMap.get("question_type"));
 
             int rowsAffected = queryManager.insert(insertQuery, values);
 

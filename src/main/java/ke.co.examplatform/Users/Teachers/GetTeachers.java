@@ -37,17 +37,19 @@ public class GetTeachers implements HttpHandler {
                             Map<String, Object> teacherMap = new HashMap<>();
                             teacherMap.put("teacher_id", resultSet.getLong("teacher_id"));
                             teacherMap.put("first_name", resultSet.getString("first_name"));
-                            teacherMap.put("second_name", resultSet.getString("second_name"));
-                            teacherMap.put("surname", resultSet.getString("surname"));
-                            teacherMap.put("gender", resultSet.getString("gender"));
+                            teacherMap.put("last_name", resultSet.getString("last_name"));
                             teacherMap.put("phone_number", resultSet.getString("phone_number"));
-                            teacherMap.put("email_address", resultSet.getString("email_address"));
-                            teacherMap.put("tsc_number", resultSet.getInt("tsc_number"));
-                            teacherMap.put("role", resultSet.getString("role"));
-                            teacherMap.put("date_of_birth", resultSet.getString("date_of_birth"));
+                            teacherMap.put("tsc_number", resultSet.getLong("tsc_number"));
+                            teacherMap.put("email_id", resultSet.getString("email_id"));
+                            teacherMap.put("gender_id", resultSet.getInt("gender_id"));
+                            teacherMap.put("birthdate", resultSet.getString("birthdate"));
+                            teacherMap.put("hire_date", resultSet.getString("hire_date"));
                             teacherMap.put("department_id", resultSet.getLong("department_id"));
+                            teacherMap.put("years_of_experience", resultSet.getInt("years_of_experience"));
+                            teacherMap.put("education_level", resultSet.getString("education_level"));
                             teacherMap.put("date_created", resultSet.getString("date_created"));
                             teacherMap.put("date_modified", resultSet.getString("date_modified"));
+
 
                             teacherList.add(teacherMap);
                         }
