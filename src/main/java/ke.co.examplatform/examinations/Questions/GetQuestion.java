@@ -35,20 +35,18 @@ public class GetQuestion implements HttpHandler {
             try {
                 Map<String, Object> questionMap;
                 questionMap = getQuestion(questionId);
-                exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "application/json");
-                exchange.getResponseSender().send(gson.toJson(questionMap));
+                if (questionMap.isEmpty()) {
+                    sendErrorResponse(exchange, 404, "Question not found", "Question ID: " + questionId + " not found or is not valid");
+                } else {
+                    exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "application/json");
+                    exchange.getResponseSender().send(gson.toJson(questionMap));
+                }
             } catch (SQLException e) {
                 e.printStackTrace();
-                String errorResponse = "Failed to fetch question";
-                exchange.setStatusCode(500);
-                exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "application/json");
-                exchange.getResponseSender().send(errorResponse);
+                sendErrorResponse(exchange, 500, "Failed to fetch question", null);
             }
         } else {
-            String errorResponse = "Question ID not provided";
-            exchange.setStatusCode(400);
-            exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "application/json");
-            exchange.getResponseSender().send(errorResponse);
+            sendErrorResponse(exchange, 400, "Question ID not provided", null);
         }
     }
 
@@ -58,7 +56,7 @@ public class GetQuestion implements HttpHandler {
         String selectQuery = "SELECT * FROM questions_details WHERE question_id = ?";
 
         Map<String, Object> paramMap = new HashMap<>();
-        paramMap.put("questionId", questionId);
+        paramMap.put("1", questionId);
 
         try {
             List<LinkedHashMap<String, Object>> results = queryManager.select(selectQuery, paramMap);
@@ -68,6 +66,25 @@ public class GetQuestion implements HttpHandler {
         } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
+
+        // If questionMap is still empty, the question ID was not found
+        if (questionMap.isEmpty()) {
+            throw new SQLException("Question ID not found");
+        }
+
         return questionMap;
+    }
+
+
+    private void sendErrorResponse(HttpServerExchange exchange, int statusCode, String message, String details) {
+        exchange.setStatusCode(statusCode);
+        exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "application/json");
+        Gson gson = new Gson();
+        Map<String, Object> errorResponse = new HashMap<>();
+        errorResponse.put("error", message);
+        if (details != null) {
+            errorResponse.put("details", details);
+        }
+        exchange.getResponseSender().send(gson.toJson(errorResponse));
     }
 }

@@ -1,4 +1,4 @@
-package ke.co.examplatform.examinations;
+package ke.co.examplatform.examinations.Answers;
 
 import com.google.gson.Gson;
 import io.undertow.server.HttpHandler;
@@ -12,15 +12,15 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.*;
 
-public class GetExamination implements HttpHandler {
+public class GetAnswer implements HttpHandler {
 
     @Override
     public void handleRequest(HttpServerExchange exchange) {
-        String examinationIdParam = exchange.getQueryParameters().getOrDefault("examinationId", new ArrayDeque<>(List.of("examination_id"))).getFirst();
+        String answerIdParam = exchange.getQueryParameters().getOrDefault("answerId", new ArrayDeque<>(List.of("answer_id"))).getFirst();
 
-        if (examinationIdParam.isEmpty()) {
+        if (answerIdParam.isEmpty()) {
             exchange.setStatusCode(StatusCodes.BAD_REQUEST);
-            exchange.getResponseSender().send("Examination ID not provided");
+            exchange.getResponseSender().send("Answer ID not provided");
             return;
         }
 
@@ -28,28 +28,28 @@ public class GetExamination implements HttpHandler {
         Map<String, Object> response = new HashMap<>();
 
         try {
-            long examinationId = Long.parseLong(examinationIdParam);
+            long answerId = Long.parseLong(answerIdParam);
 
             QueryManager queryManager = new QueryManager();
-            String selectQuery = "SELECT * FROM examination_details WHERE examination_id = ?";
+            String selectQuery = "SELECT * FROM answer_detail WHERE answer_id = ?";
             Map<String, Object> values = new LinkedHashMap<>();
-            values.put("1", examinationId);
+            values.put("1", answerId);
 
             ResultSet resultSet = (ResultSet) queryManager.select(selectQuery, values);
 
             if (resultSet.next()) {
                 ResultSetMetaData metaData = resultSet.getMetaData();
                 int count = metaData.getColumnCount();
-                Map<String, Object> examinationMap = new HashMap<>();
+                Map<String, Object> answerMap = new HashMap<>();
 
                 for (int i = 1; i <= count; i++) {
-                    examinationMap.put(metaData.getColumnLabel(i), resultSet.getObject(i));
+                    answerMap.put(metaData.getColumnLabel(i), resultSet.getObject(i));
                 }
 
-                response.put("data", examinationMap);
+                response.put("data", answerMap);
                 exchange.setStatusCode(StatusCodes.OK);
             } else {
-                response.put("error", "Examination not found");
+                response.put("error", "Answer not found");
                 exchange.setStatusCode(StatusCodes.NOT_FOUND);
             }
 
@@ -58,13 +58,13 @@ public class GetExamination implements HttpHandler {
 
         } catch (NumberFormatException e) {
             e.printStackTrace();
-            response.put("error", "Invalid examination ID format");
+            response.put("error", "Invalid answer ID format");
             exchange.setStatusCode(StatusCodes.BAD_REQUEST);
             exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "application/json");
             exchange.getResponseSender().send(gson.toJson(response));
         } catch (SQLException | ClassNotFoundException e) {
             e.printStackTrace();
-            response.put("error", "Failed to fetch examination data from the database");
+            response.put("error", "Failed to fetch answer data from the database");
             exchange.setStatusCode(StatusCodes.INTERNAL_SERVER_ERROR);
             exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "application/json");
             exchange.getResponseSender().send(gson.toJson(response));

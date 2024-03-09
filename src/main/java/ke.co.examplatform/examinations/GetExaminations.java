@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 
 public class GetExaminations implements HttpHandler {
+    private static final int DEFAULT_PAGE_SIZE = 10; // Default page size if not specified
 
     @Override
     public void handleRequest(HttpServerExchange exchange) {
@@ -25,6 +26,7 @@ public class GetExaminations implements HttpHandler {
         }
 
         Gson gson = new Gson();
+        Map<String, Object> response = new HashMap<>();
         List<Map<String, Object>> examinationList = new ArrayList<>();
 
         try {
@@ -49,8 +51,23 @@ public class GetExaminations implements HttpHandler {
                 }
             }
 
+            // Pagination metadata
+            int totalRecords = examinationList.size();
+            int totalPages = (int) Math.ceil((double) totalRecords / DEFAULT_PAGE_SIZE);
+            int currentPage = 1; // Since we're not implementing pagination logic here, set to 1 for now
+
+            Map<String, Object> pagination = new HashMap<>();
+            pagination.put("totalRecords", totalRecords);
+            pagination.put("lastPage", totalPages); // Assuming lastPage is equivalent to totalPages
+            pagination.put("totalPages", totalPages);
+            pagination.put("pageSize", DEFAULT_PAGE_SIZE);
+            pagination.put("currentPage", currentPage);
+
+            response.put("pagination", pagination);
+            response.put("data", examinationList);
+
             exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "application/json");
-            exchange.getResponseSender().send(gson.toJson(examinationList));
+            exchange.getResponseSender().send(gson.toJson(response));
         } catch (SQLException e) {
             e.printStackTrace();
             String errorResponse = "Failed to fetch examination data from the database";

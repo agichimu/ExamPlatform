@@ -17,6 +17,8 @@ import java.util.Map;
 
 public class GetChoices implements HttpHandler {
 
+    private static final int DEFAULT_PAGE_SIZE = 10; // Default page size if not specified
+
     @Override
     public void handleRequest(HttpServerExchange exchange) {
         if (exchange.isInIoThread()) {
@@ -25,6 +27,7 @@ public class GetChoices implements HttpHandler {
         }
 
         Gson gson = new Gson();
+        Map<String, Object> response = new HashMap<>();
         List<Map<String, Object>> choicesList = new ArrayList<>();
 
         try {
@@ -48,8 +51,23 @@ public class GetChoices implements HttpHandler {
                 }
             }
 
+            // Pagination metadata
+            int totalRecords = choicesList.size();
+            int totalPages = (int) Math.ceil((double) totalRecords / DEFAULT_PAGE_SIZE);
+            int currentPage = 1; // Since we're not implementing pagination logic here, set to 1 for now
+
+            Map<String, Object> pagination = new HashMap<>();
+            pagination.put("totalRecords", totalRecords);
+            pagination.put("lastPage", totalPages); // Assuming lastPage is equivalent to totalPages
+            pagination.put("totalPages", totalPages);
+            pagination.put("pageSize", DEFAULT_PAGE_SIZE);
+            pagination.put("currentPage", currentPage);
+
+            response.put("pagination", pagination);
+            response.put("data", choicesList);
+
             exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "application/json");
-            exchange.getResponseSender().send(gson.toJson(choicesList));
+            exchange.getResponseSender().send(gson.toJson(response));
         } catch (SQLException e) {
             e.printStackTrace();
             String errorResponse = "Failed to fetch choices data from the database";

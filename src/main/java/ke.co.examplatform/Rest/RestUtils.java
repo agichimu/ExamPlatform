@@ -12,8 +12,17 @@ import java.nio.charset.StandardCharsets;
 import java.util.Deque;
 import java.util.HashMap;
 
+/**
+ * Utility class for handling RESTful operations.
+ */
 public class RestUtils {
 
+    /**
+     * Reads the request body from the HTTP server exchange.
+     *
+     * @param exchange The HTTP server exchange object representing the request and response.
+     * @return The request body as a string.
+     */
     public static String getRequestBody(HttpServerExchange exchange) {
 
         BufferedReader reader = null;
@@ -26,7 +35,6 @@ public class RestUtils {
             String line;
             while ((line = reader.readLine()) != null) {
                 builder.append(line);
-
             }
 
         } catch (IOException e) {
@@ -44,14 +52,19 @@ public class RestUtils {
         return builder.toString();
     }
 
-
-
+    /**
+     * Retrieves the value of a path variable from the HTTP server exchange.
+     *
+     * @param exchange   The HTTP server exchange object representing the request and response.
+     * @param pathVarId  The identifier of the path variable.
+     * @return The value of the path variable.
+     */
     public static String getPathVar(HttpServerExchange exchange, String pathVarId) {
 
         PathTemplateMatch pathMatch = exchange.getAttachment(PathTemplateMatch.ATTACHMENT_KEY);
         StringBuilder builder = new StringBuilder();
 
-        if(pathMatch.getParameters().get(pathVarId)==null){
+        if (pathMatch.getParameters().get(pathVarId) == null) {
             return null;
         }
 
@@ -59,20 +72,18 @@ public class RestUtils {
         return builder.toString();
     }
 
-    /*public String getPathVar(HttpServerExchange exchange, String pathVarId) {
-        PathTemplateMatch pathMatch =
-                exchange.getAttachment(PathTemplateMatch.ATTACHMENT_KEY);
-        String pv = pathMatch.getParameters().get(pathVarId);
-        JvmManager.gc(pathMatch);
-        return pv;
-    }
-*/
+    /**
+     * Retrieves the value of a query parameter from the HTTP server exchange.
+     *
+     * @param exchange The HTTP server exchange object representing the request and response.
+     * @param key      The key of the query parameter.
+     * @return The value of the query parameter.
+     */
     public static String getQueryParam(HttpServerExchange exchange, String key) {
         Deque<String> param = exchange.getQueryParameters().get(key);
         String paramStr = null;
 
-        if (param != null && !param.getFirst().equals(""))
-        {
+        if (param != null && !param.getFirst().equals("")) {
             paramStr = param.getFirst();
             paramStr = URLDecoder.decode(paramStr, StandardCharsets.UTF_8);
         }
@@ -80,6 +91,13 @@ public class RestUtils {
         return paramStr;
     }
 
+    /**
+     * Retrieves multiple query parameters from the HTTP server exchange.
+     *
+     * @param exchange The HTTP server exchange object representing the request and response.
+     * @param keys     The keys of the query parameters to retrieve.
+     * @return A map containing the retrieved query parameters.
+     */
     public static HashMap<String, String> getQueryParams(HttpServerExchange exchange, String... keys) {
 
         HashMap<String, String> params = new HashMap<>();
@@ -88,12 +106,10 @@ public class RestUtils {
         for (String key : keys) {
             param = exchange.getQueryParameters().get(key);
 
-            if (param != null && !param.getFirst().isEmpty())
-            {
+            if (param != null && !param.getFirst().isEmpty()) {
                 String paramStr = param.getFirst();
                 paramStr = URLDecoder.decode(paramStr, StandardCharsets.UTF_8);
                 params.put(key, paramStr);
-
             }
         }
 

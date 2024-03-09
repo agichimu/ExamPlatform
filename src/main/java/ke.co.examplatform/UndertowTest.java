@@ -31,7 +31,9 @@ public class UndertowTest {
                         .addPrefixPath(basePathRest + "/users/pupils", Routes.Pupils())
                         .addPrefixPath(basePathRest + "/users/teachers", Routes.Teachers())
                         .addPrefixPath(basePathRest + "/users/guardians", Routes.Guardians())
-                        .addPrefixPath(basePathRest + "/users/guardians/roles", Routes.GuardianRoles());
+                        .addPrefixPath(basePathRest + "/users/guardians/roles", Routes.GuardianRoles())
+                        .addPrefixPath(basePathRest + "/users/genders", Routes.Genders());
+
 
                 Undertow server = Undertow.builder()
                         .setServerOption(UndertowOptions.DECODE_URL, true)

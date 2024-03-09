@@ -58,6 +58,7 @@ public class UpdateTeachers implements HttpHandler {
                 exchange.setStatusCode(200); //OK
             } else {
                 updateData.put("error", "Failed to update teacher details");
+                updateData.put("details", "No teacher found with the specified ID or the provided data is invalid.");
                 exchange.setStatusCode(404); // Not Found
             }
         } catch (SQLException | ClassNotFoundException e) {
@@ -69,6 +70,7 @@ public class UpdateTeachers implements HttpHandler {
         exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "application/json");
         exchange.getResponseSender().send(gson.toJson(updateData));
     }
+
 
     private void sendBadRequestResponse(HttpServerExchange exchange) {
         exchange.setStatusCode(StatusCodes.BAD_REQUEST);

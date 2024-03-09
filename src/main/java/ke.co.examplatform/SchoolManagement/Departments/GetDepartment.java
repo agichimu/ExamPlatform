@@ -1,4 +1,4 @@
-package ke.co.examplatform.Users.Guardians;
+package ke.co.examplatform.Users.Departments;
 
 import com.google.gson.Gson;
 import io.undertow.server.HttpHandler;
@@ -16,16 +16,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class GetGuardian implements HttpHandler {
+public class GetDepartment implements HttpHandler {
 
     @Override
     public void handleRequest(HttpServerExchange exchange) {
-        String guardianIdParam = exchange.getQueryParameters().getOrDefault("guardianId", new ArrayDeque<>(List.of("guardian_id"))).getFirst();
+        String departmentIdParam = exchange.getQueryParameters().getOrDefault("departmentId", new ArrayDeque<>(List.of("department_id"))).getFirst();
 
 
-        if (guardianIdParam.isEmpty()) {
+        if (departmentIdParam.isEmpty()) {
             exchange.setStatusCode(StatusCodes.BAD_REQUEST);
-            exchange.getResponseSender().send("Guardian ID not provided");
+            exchange.getResponseSender().send("Department ID not provided");
             return;
         }
 
@@ -33,29 +33,25 @@ public class GetGuardian implements HttpHandler {
         Map<String, Object> response = new HashMap<>();
 
         try {
-            long guardianId = Long.parseLong(guardianIdParam);
+            long departmentId = Long.parseLong(departmentIdParam);
 
             try (Connection connection = ConnectionsXmlReader.getDbConnection()) {
-                String selectQuery = "SELECT * FROM guardian_details WHERE guardian_id = ?";
+                String selectQuery = "SELECT * FROM department_details WHERE department_id = ?";
                 try (PreparedStatement preparedStatement = connection.prepareStatement(selectQuery)) {
-                    preparedStatement.setLong(1, guardianId);
+                    preparedStatement.setLong(1, departmentId);
 
                     try (ResultSet resultSet = preparedStatement.executeQuery()) {
                         if (resultSet.next()) {
-                            Map<String, Object> guardianMap = new HashMap<>();
-                            guardianMap.put("guardian_id", resultSet.getLong("guardian_id"));
-                            guardianMap.put("first_name", resultSet.getString("first_name"));
-                            guardianMap.put("surname", resultSet.getString("surname"));
-                            guardianMap.put("phone_number", resultSet.getString("phone_number"));
-                            guardianMap.put("gender_id", resultSet.getInt("gender_id"));
-                            guardianMap.put("role_id", resultSet.getLong("role_id"));
-                            guardianMap.put("date_created", resultSet.getString("date_created"));
-                            guardianMap.put("date_modified", resultSet.getString("date_modified"));
+                            Map<String, Object> departmentMap = new HashMap<>();
+                            departmentMap.put("department_id", resultSet.getLong("department_id"));
+                            departmentMap.put("department_name", resultSet.getString("department_name"));
+                            departmentMap.put("date_created", resultSet.getString("date_created"));
+                            departmentMap.put("date_modified", resultSet.getString("date_modified"));
 
-                            response.put("data", guardianMap);
+                            response.put("data", departmentMap);
                             exchange.setStatusCode(StatusCodes.OK);
                         } else {
-                            response.put("error", "Guardian not found");
+                            response.put("error", "Department not found");
                             exchange.setStatusCode(StatusCodes.NOT_FOUND);
                         }
                     }
@@ -66,13 +62,13 @@ public class GetGuardian implements HttpHandler {
             }
         } catch (NumberFormatException e) {
             e.printStackTrace();
-            response.put("error", "Invalid guardian ID format");
+            response.put("error", "Invalid department ID format");
             exchange.setStatusCode(StatusCodes.BAD_REQUEST);
             exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "application/json");
             exchange.getResponseSender().send(gson.toJson(response));
         } catch (SQLException e) {
             e.printStackTrace();
-            response.put("error", "Failed to fetch guardian data from the database");
+            response.put("error", "Failed to fetch department data from the database");
             exchange.setStatusCode(StatusCodes.INTERNAL_SERVER_ERROR);
             exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "application/json");
             exchange.getResponseSender().send(gson.toJson(response));

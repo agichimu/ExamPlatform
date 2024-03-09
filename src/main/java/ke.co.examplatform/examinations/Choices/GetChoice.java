@@ -35,20 +35,18 @@ public class GetChoice implements HttpHandler {
             try {
                 Map<String, Object> choiceMap;
                 choiceMap = getChoice(choiceId);
-                exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "application/json");
-                exchange.getResponseSender().send(gson.toJson(choiceMap));
+                if (choiceMap.isEmpty()) {
+                    sendErrorResponse(exchange, 404, "Choice not found", "choice Id: " + choiceId + " not found or is not valid");
+                } else {
+                    exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "application/json");
+                    exchange.getResponseSender().send(gson.toJson(choiceMap));
+                }
             } catch (SQLException e) {
                 e.printStackTrace();
-                String errorResponse = "Failed to fetch choice";
-                exchange.setStatusCode(500);
-                exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "application/json");
-                exchange.getResponseSender().send(errorResponse);
+                sendErrorResponse(exchange, 500, "Failed to fetch Choice", null);
             }
         } else {
-            String errorResponse = "Choice ID not provided";
-            exchange.setStatusCode(400);
-            exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "application/json");
-            exchange.getResponseSender().send(errorResponse);
+            sendErrorResponse(exchange, 400, "Choice id not provided", null);
         }
     }
 
@@ -56,18 +54,37 @@ public class GetChoice implements HttpHandler {
         Map<String, Object> choiceMap = new HashMap<>();
 
         String selectQuery = "SELECT * FROM choices_details WHERE choice_id = ?";
-
         Map<String, Object> paramMap = new HashMap<>();
-        paramMap.put("choiceId", choiceId);
+        paramMap.put("1", choiceId);
 
         try {
             List<LinkedHashMap<String, Object>> results = queryManager.select(selectQuery, paramMap);
             if (!results.isEmpty()) {
                 choiceMap = results.get(0);
+            } else {
+                System.out.println("No choice found for ID: " + choiceId);
             }
         } catch (ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
+
+        // If choiceMap is still empty, the choice ID was not found
+        if (choiceMap.isEmpty()) {
+            throw new SQLException("Choice ID not found");
+        }
+
         return choiceMap;
+    }
+
+    private void sendErrorResponse(HttpServerExchange exchange, int statusCode, String message, String details) {
+        exchange.setStatusCode(statusCode);
+        exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "application/json");
+        Gson gson = new Gson();
+        Map<String, Object> errorResponse = new HashMap<>();
+        errorResponse.put("error", message);
+        if (details != null) {
+            errorResponse.put("details", details);
+        }
+        exchange.getResponseSender().send(gson.toJson(errorResponse));
     }
 }

@@ -1,4 +1,4 @@
-package ke.co.examplatform.examinations.Questions;
+package ke.co.examplatform.examinations.Answers;
 
 import com.google.gson.Gson;
 import io.undertow.server.HttpHandler;
@@ -15,8 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class GetQuestions implements HttpHandler {
-
+public class GetAnswers implements HttpHandler {
     private static final int DEFAULT_PAGE_SIZE = 10; // Default page size if not specified
 
     @Override
@@ -28,30 +27,30 @@ public class GetQuestions implements HttpHandler {
 
         Gson gson = new Gson();
         Map<String, Object> response = new HashMap<>();
-        List<Map<String, Object>> questionList = new ArrayList<>();
+        List<Map<String, Object>> answerList = new ArrayList<>();
 
         try {
             try (Connection connection = ConnectionsXmlReader.getDbConnection()) {
-                String selectQuery = "SELECT * FROM questions_details";
+                String selectQuery = "SELECT * FROM answer_detail";
 
                 try (PreparedStatement preparedStatement = connection.prepareStatement(selectQuery)) {
                     try (ResultSet resultSet = preparedStatement.executeQuery()) {
                         while (resultSet.next()) {
-                            Map<String, Object> questionMap = new HashMap<>();
-                            questionMap.put("question_id", resultSet.getLong("question_id"));
-                            questionMap.put("examination_id", resultSet.getLong("examination_id"));
-                            questionMap.put("question_text", resultSet.getString("question_text"));
-                            questionMap.put("date_created", resultSet.getString("date_created"));
-                            questionMap.put("date_modified", resultSet.getString("date_modified"));
-
-                            questionList.add(questionMap);
+                            Map<String, Object> answerMap = new HashMap<>();
+                            answerMap.put("answer_id", resultSet.getLong("answer_id"));
+                            answerMap.put("choice_id", resultSet.getLong("choice_id"));
+                            answerMap.put("pupil_id", resultSet.getLong("pupil_id"));
+                            answerMap.put("scores", resultSet.getBigDecimal("scores"));
+                            answerMap.put("date_created", resultSet.getString("date_created"));
+                            answerMap.put("date_modified", resultSet.getString("date_modified"));
+                            answerList.add(answerMap);
                         }
                     }
                 }
             }
 
             // Pagination metadata
-            int totalRecords = questionList.size();
+            int totalRecords = answerList.size();
             int totalPages = (int) Math.ceil((double) totalRecords / DEFAULT_PAGE_SIZE);
             int currentPage = 1; // Since we're not implementing pagination logic here, set to 1 for now
 
@@ -63,13 +62,13 @@ public class GetQuestions implements HttpHandler {
             pagination.put("currentPage", currentPage);
 
             response.put("pagination", pagination);
-            response.put("data", questionList);
+            response.put("data", answerList);
 
             exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "application/json");
             exchange.getResponseSender().send(gson.toJson(response));
         } catch (SQLException e) {
             e.printStackTrace();
-            String errorResponse = "Failed to fetch question data from the database";
+            String errorResponse = "Failed to fetch answer data from the database";
             exchange.setStatusCode(500);
             exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "application/json");
             exchange.getResponseSender().send(errorResponse);
